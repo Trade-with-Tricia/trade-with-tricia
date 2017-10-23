@@ -1,0 +1,13 @@
+System Test 1 - Adding Book to Database Through Chatbot
+	Text Tricia the ISBN of a book, that you would like to buy it,
+	and all other requested information. On another phone, text Tricia
+	again with the same ISBN and that you are looking to sell and verify
+	that Tricia finds the match, which would confirm that the book has
+	been added. 
+
+System Test 2 - Removing Book to Database Through Chatbot
+	After completing System Test 1, go through the process on both phones
+	to confirm the exchange. On the second phone, text Tricia again with
+	the same ISBN and that you are looking to sell. Verify that Tricia
+	does not find a match, indicating that the book has been successfully
+	removed from the database.
