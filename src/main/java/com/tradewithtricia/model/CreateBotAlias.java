@@ -24,7 +24,7 @@ public class CreateBotAlias {
         putBotAliasRequest.setBotName(this.botName);
         putBotAliasRequest.setName(this.aliasName);
         putBotAliasRequest.setBotVersion(this.botVersion);
-//        putBotAliasRequest.setChecksum(this.botAliasChecksum);//Specify checksum only when updating
+        //putBotAliasRequest.setChecksum(this.botAliasChecksum);//Specify checksum only when updating
         putBotAliasRequest.setDescription(this.botAliasDescription);
         PutBotAliasResult putBotAliasResult = modelBuildingClient.putBotAlias(putBotAliasRequest);
     }

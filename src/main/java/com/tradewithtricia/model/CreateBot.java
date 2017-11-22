@@ -12,6 +12,7 @@ public class CreateBot {
     private String botChecksum;
     private boolean childDirected;
     private Locale locale;
+    private GetBotResult tricia;
 
 
     public CreateBot() {
@@ -25,6 +26,10 @@ public class CreateBot {
         this.botChecksum = botChecksum;
         this.childDirected = childDirected;
         this.locale = locale;
+    }
+
+    public CreateBot(GetBotResult tricia) {
+        this.tricia = tricia;
     }
 
     public PutBotResult putBot(AmazonLexModelBuilding modelBuildingClient) {
@@ -45,37 +50,25 @@ public class CreateBot {
         listOfAbortStatements.add(abortMessage);
         abortStatement.setMessages(listOfAbortStatements);
 
-        //Commented out code should be used when we are not publishing a version
-//        CreateIntent dummyIntent = new CreateIntent();
-//        PutIntentResult dummyIntentResult = dummyIntent.putIntent(modelBuildingClient);
+        CreateIntent dummyIntent = new CreateIntent();
+        PutIntentResult dummyIntentResult = dummyIntent.putIntent(modelBuildingClient);
 
-//        Collection<Intent> listOfIntents = new ArrayList<Intent>();
-//        Intent actualDummyIntent = new Intent();
-//        actualDummyIntent.setIntentName(dummyIntentResult.getName());
-//        actualDummyIntent.setIntentVersion(dummyIntentResult.getVersion());
-//        listOfIntents.add(actualDummyIntent);
 
-        //Need to use this chunk of code when publishing because to publish a bot you need to used a published version of the intent
-        GetIntentRequest getIntentRequest = new GetIntentRequest();
-        getIntentRequest.setName("AddBookToISBN");
-        getIntentRequest.setVersion("1");
-        GetIntentResult getIntentResult = modelBuildingClient.getIntent(getIntentRequest);
 
         Collection<Intent> listOfIntents = new ArrayList<Intent>();
         Intent actualDummyIntent = new Intent();
-        actualDummyIntent.setIntentName(getIntentRequest.getName());
-        actualDummyIntent.setIntentVersion(getIntentRequest.getVersion());
+        actualDummyIntent.setIntentName(dummyIntentResult.getName());
+        actualDummyIntent.setIntentVersion(dummyIntentResult.getVersion());
         listOfIntents.add(actualDummyIntent);
-
 
         if (!validateRequiredParams()) {
             return null;
         }
         PutBotRequest putBotRequest = new PutBotRequest();
-        putBotRequest.setName(this.botName);
-        putBotRequest.setChecksum(this.botChecksum);
-        putBotRequest.setChildDirected(this.childDirected);
-        putBotRequest.setLocale(this.locale);
+        putBotRequest.setName(this.tricia.getName());
+        putBotRequest.setChecksum(this.tricia.getChecksum());
+        putBotRequest.setChildDirected(this.tricia.getChildDirected());
+        putBotRequest.setLocale(this.tricia.getLocale());
         putBotRequest.setDescription("Hello there");
         putBotRequest.setClarificationPrompt(clarificationPrompt);
         putBotRequest.setAbortStatement(abortStatement);

@@ -19,18 +19,19 @@ public class TradeWithTricia
         AmazonLexRuntime lexRuntimeClient = AmazonLexRuntimeClientBuilder.defaultClient();
         AmazonLexModelBuilding lexModelBuildingClient = AmazonLexModelBuildingClientBuilder.defaultClient();
 
+        //Get the bot we want to update
         GetBotRequest getBotRequest = new GetBotRequest();
         getBotRequest.setName("Tricia");
         getBotRequest.setVersionOrAlias("$LATEST");
         GetBotResult getBotResult = lexModelBuildingClient.getBot(getBotRequest);
 
-
+        //Update our bot using the checksum retrieved
         CreateBot createBot = new CreateBot();
-        createBot.setBotChecksum(getBotResult.getChecksum());
-        PutBotResult tricia = createBot.putBot(lexModelBuildingClient);
+        createBot.putBot(lexModelBuildingClient);
 
-        PublishBot publishTricia = new PublishBot("Tricia", getBotResult.getChecksum());
-        publishTricia.publishBot(lexModelBuildingClient);
+        // Bot Publishing Process
+        //PublishBot publishTricia = new PublishBot(getBotResult);
+        //publishTricia.publishBot(lexModelBuildingClient);
 
 
 
