@@ -122,6 +122,66 @@ public class CreateIntent {
         this.putIntent();
     }
 
+    public void createSellIntent(boolean updateIntent) {
+        this.intentName = "SellBook";
+
+        if (updateIntent) this.retrieveChecksum(this.intentName, "$LATEST");
+        else this.checksum = null;
+
+        this.conclusionStatement = null;
+
+        //Setup confirmation prompt
+        this.confirmationPrompt = new Prompt().withMaxAttempts(2)
+                .withMessages(new Message().withContentType(ContentType.PlainText)
+                        .withContent("Is this the correct ISBN number: {ISBN}"));
+        //Setup rejection message if the user says no to confirmation prompt
+        this.rejectionStatement = new Statement().withMessages(new Message().withContentType(ContentType.PlainText)
+                .withContent("Please re-enter the ISBN number in this format: \'ISBN: (ISBN # here)\'"));
+
+
+        this.description = "Intent to handle user wanting to sell a book from Tricia";
+
+        //Use this if we need to do any lambda initialization work
+//        CodeHook codeHook = new CodeHook();
+//        codeHook.setMessageVersion("1.0");
+//        codeHook.setUri(null);
+//        this.dialogCodeHook = codeHook;
+        this.dialogCodeHook = null;
+
+        //Setup followUpPrompt
+        Prompt followUpPrompt = new Prompt().withMaxAttempts(2).withMessages(new Message()
+                .withContentType(ContentType.PlainText)
+                .withContent("Is there anything else I can help you with today?"));
+        Statement rejectionStatement = new Statement().withMessages(new Message()
+                .withContentType(ContentType.PlainText)
+                .withContent("Okay, thanks for using Trade with Tricia. I hope I was able to help you with what you needed today."));
+        this.followUpPrompt = new FollowUpPrompt().withPrompt(followUpPrompt)
+                .withRejectionStatement(rejectionStatement);
+
+        //TODO: attach lambda function to sell intent when complete
+//        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
+//                .withCodeHook(new CodeHook().withMessageVersion("1.0")
+//                    .withUri("arn:aws:lambda:us-east-1:140857943657:function:TestFunction"));//example uri
+        //Just return intent for now
+        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.ReturnIntent);
+
+        this.parentIntentSignature = null;
+
+        //Set sampleUtterances
+        Collection<String> sampleUtterances = new ArrayList<String>();
+        sampleUtterances.add("{UserPhoneNumber} Hey Tricia I would like to {Sell} a book");
+        sampleUtterances.add("{UserPhoneNumber} Hey Tricia I would like to {Sell} a book with ISBN {ISBN}");
+        sampleUtterances.add("{UserPhoneNumber} I would like to {Sell} a book with ISBN number {ISBN}");
+        sampleUtterances.add("{UserPhoneNumber} I'm trying to {Sell} a book");
+        sampleUtterances.add("{UserPhoneNumber} I'm looking for a book to {Sell}");
+        sampleUtterances.add("{UserPhoneNumber} I'm looking for a book");
+        this.sampleUtterances = sampleUtterances;
+
+        this.slots = this.getSellIntentSlots();
+
+        this.putIntent();
+    }
+
     public void createEndConversationIntent(boolean updateIntent) {
         this.intentName = "EndConversation";
 
@@ -179,6 +239,27 @@ public class CreateIntent {
         buyIntentSlots.add(ISBN);
         buyIntentSlots.add(buySlot);
         return buyIntentSlots;
+    }
+
+    private Collection<Slot> getSellIntentSlots() {
+        Collection<Slot> sellIntentSlots = new ArrayList<Slot>();
+        Slot userPhoneNumber = new Slot().withName("UserPhoneNumber").withDescription("Phone Number of User")
+                .withPriority(1).withSlotConstraint(SlotConstraint.Required)
+                .withSlotType("AMAZON.NUMBER");
+        Slot ISBN = new Slot().withName("ISBN").withDescription("ISBN of a book")
+                .withPriority(3).withSlotConstraint(SlotConstraint.Required)
+                .withSampleUtterances("The ISBN of my book is {ISBN}")
+                .withSlotType("AMAZON.NUMBER").withValueElicitationPrompt(new Prompt().withMaxAttempts(2)
+                        .withMessages(new Message().withContentType(ContentType.PlainText)
+                                .withContent("What is the ISBN number of the book you want to sell?")));
+        Slot sellSlot = new Slot().withName("Sell").withDescription("Sell along with synonyms")
+                .withPriority(2).withSlotConstraint(SlotConstraint.Required)
+                .withSlotType("Sell").withSlotTypeVersion("$LATEST");
+
+        sellIntentSlots.add(userPhoneNumber);
+        sellIntentSlots.add(ISBN);
+        sellIntentSlots.add(sellSlot);
+        return sellIntentSlots;
     }
 
     public String getIntentName() {

@@ -64,6 +64,21 @@ public class CreateSlotType {
         this.putSlotType();
     }
 
+    public void createSellTypeSlot(boolean updateSlotType) {
+        this.slotName = "Buy";
+
+        if (updateSlotType) this.retrieveChecksum(this.slotName, "$LATEST");
+        else this.checksum = null;
+
+        this.description = "Slot type to recognize sell and synonyms of sell";
+        Collection<String> sellSynonyms = new ArrayList<String>();
+        Collection<EnumerationValue> enumerationValues = new ArrayList<EnumerationValue>();
+        enumerationValues.add(new EnumerationValue().withValue("sell").withSynonyms(sellSynonyms));
+        this.enumerationValues = enumerationValues;
+        this.valueSelectionStrategy = "TOP_RESOLUTION";
+        this.putSlotType();
+    }
+
     private void retrieveChecksum(String slotName, String version) {
         GetSlotTypeRequest getSlotTypeRequest = new GetSlotTypeRequest().withName(slotName)
                 .withVersion(version);
