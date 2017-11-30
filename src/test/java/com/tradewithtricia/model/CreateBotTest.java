@@ -17,25 +17,25 @@ public class CreateBotTest {
     public CreateBot createBotObj;
     public PutBotResult testTricia;
 
-    @Test
-    public void putBotHappyPathTest() {
-        botName = "testTricia";
-        botChecksum = "$LATEST";
-        childDirected = false;
-        locale = Locale.EnUS;
-        createBotObj = new CreateBot(botName, botChecksum,childDirected, locale);
-        testTricia = createBotObj.putBot(testClient);
-        assertEquals("bot name", botName, testTricia.getName());
-        assertFalse("childDirected was true", testTricia.getChildDirected());
-        assertEquals("locale",locale, testTricia.getLocale());
-    }
-
-    @Test
-    public void putBotReturnsNullWhenBadParamsTest() {
-        createBotObj = new CreateBot(null, null, true, null);
-        testTricia = createBotObj.putBot(testClient);
-        assertNull("putBot was not null", testTricia);
-
-    }
+//    @Test
+//    public void putBotHappyPathTest() {
+//        botName = "testTricia";
+//        botChecksum = "$LATEST";
+//        childDirected = false;
+//        locale = Locale.EnUS;
+//        createBotObj = new CreateBot(botName, botChecksum,childDirected, locale);
+//        testTricia = createBotObj.putBot(testClient);
+//        assertEquals("bot name", botName, testTricia.getName());
+//        assertFalse("childDirected was true", testTricia.getChildDirected());
+//        assertEquals("locale",locale, testTricia.getLocale());
+//    }
+//
+//    @Test
+//    public void putBotReturnsNullWhenBadParamsTest() {
+//        createBotObj = new CreateBot(null, null, true, null);
+//        testTricia = createBotObj.putBot(testClient);
+//        assertNull("putBot was not null", testTricia);
+//
+//    }
 
 }
