@@ -65,13 +65,14 @@ public class CreateSlotType {
     }
 
     public void createSellTypeSlot(boolean updateSlotType) {
-        this.slotName = "Buy";
+        this.slotName = "Sell";
 
         if (updateSlotType) this.retrieveChecksum(this.slotName, "$LATEST");
         else this.checksum = null;
 
         this.description = "Slot type to recognize sell and synonyms of sell";
         Collection<String> sellSynonyms = new ArrayList<String>();
+        sellSynonyms.add("unload");
         Collection<EnumerationValue> enumerationValues = new ArrayList<EnumerationValue>();
         enumerationValues.add(new EnumerationValue().withValue("sell").withSynonyms(sellSynonyms));
         this.enumerationValues = enumerationValues;

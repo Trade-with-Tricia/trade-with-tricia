@@ -173,8 +173,7 @@ public class CreateIntent {
         sampleUtterances.add("{UserPhoneNumber} Hey Tricia I would like to {Sell} a book with ISBN {ISBN}");
         sampleUtterances.add("{UserPhoneNumber} I would like to {Sell} a book with ISBN number {ISBN}");
         sampleUtterances.add("{UserPhoneNumber} I'm trying to {Sell} a book");
-        sampleUtterances.add("{UserPhoneNumber} I'm looking for a book to {Sell}");
-        sampleUtterances.add("{UserPhoneNumber} I'm looking for a book");
+        sampleUtterances.add("{UserPhoneNumber} I'm looking to {Sell} a book");
         this.sampleUtterances = sampleUtterances;
 
         this.slots = this.getSellIntentSlots();
@@ -245,7 +244,9 @@ public class CreateIntent {
         Collection<Slot> sellIntentSlots = new ArrayList<Slot>();
         Slot userPhoneNumber = new Slot().withName("UserPhoneNumber").withDescription("Phone Number of User")
                 .withPriority(1).withSlotConstraint(SlotConstraint.Required)
-                .withSlotType("AMAZON.NUMBER");
+                .withSlotType("AMAZON.NUMBER")
+                .withValueElicitationPrompt(new Prompt().withMaxAttempts(1).withMessages(new Message().withContentType(ContentType.PlainText)
+                .withContent("Something went wrong, I could not recognize your phone number")));
         Slot ISBN = new Slot().withName("ISBN").withDescription("ISBN of a book")
                 .withPriority(3).withSlotConstraint(SlotConstraint.Required)
                 .withSampleUtterances("The ISBN of my book is {ISBN}")
@@ -254,7 +255,9 @@ public class CreateIntent {
                                 .withContent("What is the ISBN number of the book you want to sell?")));
         Slot sellSlot = new Slot().withName("Sell").withDescription("Sell along with synonyms")
                 .withPriority(2).withSlotConstraint(SlotConstraint.Required)
-                .withSlotType("Sell").withSlotTypeVersion("$LATEST");
+                .withSlotType("Sell").withSlotTypeVersion("$LATEST")
+                .withValueElicitationPrompt(new Prompt().withMaxAttempts(1).withMessages(new Message().withContentType(ContentType.PlainText)
+                        .withContent("What would you like to do today?")));;
 
         sellIntentSlots.add(userPhoneNumber);
         sellIntentSlots.add(ISBN);
