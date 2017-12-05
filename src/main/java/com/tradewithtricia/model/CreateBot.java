@@ -119,6 +119,12 @@ public class CreateBot {
         triciaIntents.add(new Intent().withIntentName(getEndConversationIntentResult.getName())
                 .withIntentVersion(getEndConversationIntentResult.getVersion()));
 
+        GetIntentRequest getFirstTimeUserIntentRequest = new GetIntentRequest().withName("FirstTimeUser")
+                .withVersion("$LATEST");
+        GetIntentResult getFirstTimeUserIntentResult = this.lexModelBuildingClient.getIntent(getFirstTimeUserIntentRequest);
+        triciaIntents.add(new Intent().withIntentName(getFirstTimeUserIntentResult.getName())
+                .withIntentVersion(getFirstTimeUserIntentResult.getVersion()));
+
         return triciaIntents;
     }
 

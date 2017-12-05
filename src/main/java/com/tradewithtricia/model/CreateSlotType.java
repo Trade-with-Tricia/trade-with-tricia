@@ -57,6 +57,8 @@ public class CreateSlotType {
         this.description = "Slot type to recognize buy and synonyms of buy";
         Collection<String> buySynonyms = new ArrayList<String>();
         buySynonyms.add("purchase");
+        buySynonyms.add("find");
+        buySynonyms.add("looking");
         Collection<EnumerationValue> enumerationValues = new ArrayList<EnumerationValue>();
         enumerationValues.add(new EnumerationValue().withValue("buy").withSynonyms(buySynonyms));
         this.enumerationValues = enumerationValues;

@@ -39,6 +39,7 @@ public class TradeWithTricia
         triciaIntents.createBuyIntent(true);
         triciaIntents.createEndConversationIntent(true);
         triciaIntents.createSellIntent(false);
+        triciaIntents.createFirstTimeUserIntent(true);
 
         //Update our bot using the checksum retrieved
         CreateBot tricia = new CreateBot();
@@ -54,29 +55,29 @@ public class TradeWithTricia
 //        createBotAlias.putBotAlias(lexModelBuildingClient);
 
         // Test bot from console
-        PostTextRequest textRequest = new PostTextRequest();
-        textRequest.setBotName("Tricia");
-        textRequest.setBotAlias("dev");
-        textRequest.setUserId("testUser");
-        Scanner scanner = new Scanner(System.in);
-        while(true) {
-            String requestText = scanner.nextLine().trim();
-            if(isEmpty(requestText))
-                break;
-
-            textRequest.setInputText(requestText);
-            PostTextResult textResult = lexRuntimeClient.postText(textRequest);
-            if(textResult.getDialogState().startsWith("Elicit"))
-                System.out.println(textResult.getMessage());
-            else if (textResult.getDialogState().equals("ConfirmIntent"))
-                System.out.println(textResult.getIntentName());
-            else if(textResult.getDialogState().equals("ReadyForFulfillment"))
-                System.out.println(String.format("%s: %s", textResult.getIntentName(), textResult.getSlots()));
-            else
-                System.out.println(textResult.toString());
-
-        }
-        System.out.println("Bye.");
+//        PostTextRequest textRequest = new PostTextRequest();
+//        textRequest.setBotName("Tricia");
+//        textRequest.setBotAlias("dev");
+//        textRequest.setUserId("testUser");
+//        Scanner scanner = new Scanner(System.in);
+//        while(true) {
+//            String requestText = scanner.nextLine().trim();
+//            if(isEmpty(requestText))
+//                break;
+//
+//            textRequest.setInputText(requestText);
+//            PostTextResult textResult = lexRuntimeClient.postText(textRequest);
+//            if(textResult.getDialogState().startsWith("Elicit"))
+//                System.out.println(textResult.getMessage());
+//            else if (textResult.getDialogState().equals("ConfirmIntent"))
+//                System.out.println(textResult.getIntentName());
+//            else if(textResult.getDialogState().equals("ReadyForFulfillment"))
+//                System.out.println(String.format("%s: %s", textResult.getIntentName(), textResult.getSlots()));
+//            else
+//                System.out.println(textResult.toString());
+//
+//        }
+//        System.out.println("Bye.");
 
 
     }
