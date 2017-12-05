@@ -114,7 +114,7 @@ public class CreateIntent {
         sampleUtterances.add("{UserPhoneNumber} I would like to {Buy} a book with ISBN number {ISBN}");
         sampleUtterances.add("{UserPhoneNumber} I'm trying to {Buy} a book");
         sampleUtterances.add("{UserPhoneNumber} I'm looking for a book to {Buy}");
-        sampleUtterances.add("{UserPhoneNumber} I'm looking for a book");
+        sampleUtterances.add("{UserPhoneNumber} I'm {Buy} for a book");
         this.sampleUtterances = sampleUtterances;
 
         this.slots = this.getBuyIntentSlots();
@@ -148,10 +148,49 @@ public class CreateIntent {
         this.putIntent();
     }
 
-    public void createGreetingIntent(boolean updateIntent) {
-        this.intentName = "Greeting";
+    public void createFirstTimeUserIntent(boolean updateIntent) {
+        this.intentName = "FirstTimeUser";
+
+        if (updateIntent) this.retrieveChecksum(this.intentName, "$LATEST");
+        else this.checksum = null;
+
+        this.conclusionStatement = null;
+
+        this.confirmationPrompt = new Prompt().withMaxAttempts(2)
+                .withMessages(new Message().withContentType(ContentType.PlainText)
+                    .withContent("Just to confirm, is {UserFirstName} {UserLastName} your name?"));
+        //Setup rejection message if the user says no to confirmation prompt
+        this.rejectionStatement = new Statement().withMessages(new Message().withContentType(ContentType.PlainText)
+            .withContent("Please re-enter your name in this format \'My name is (first) (last)\'"));
+
+        this.description = "Intent to handle a first time user of TWT";
+
+        this.dialogCodeHook = null;
+
+        //Setup followUpPrompt
+        this.followUpPrompt = new FollowUpPrompt().withPrompt(new Prompt().withMaxAttempts(2)
+                .withMessages(new Message().withContentType(ContentType.PlainText)
+                    .withContent("Thanks {UserFirstName}! What can I help you with today?")))
+                    .withRejectionStatement(new Statement().withMessages(new Message()
+                        .withContentType(ContentType.PlainText)
+                        .withContent("Okay, thanks for using Trade with Tricia. I hope I was able to help you with what you needed today.")));
+
+        //TODO: Need Lambda function to store user's name in db
+        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.ReturnIntent);
+
+        this.parentIntentSignature = null;
+
+        Collection<String> sampleUtterances = new ArrayList<String>();
+        sampleUtterances.add("{UserPhoneNumber} This is a first time user");
+        sampleUtterances.add("{UserPhoneNumber} My name is {UserFirstName} {UserLastName}");
+        this.sampleUtterances = sampleUtterances;
+
+        this.slots = this.getFirstTimeUserSlots();
+
+        this.putIntent();
 
     }
+
 
     private void retrieveChecksum(String intentName, String version) {
         GetIntentRequest getIntentRequest = new GetIntentRequest().withName(intentName)
@@ -164,21 +203,61 @@ public class CreateIntent {
         Collection<Slot> buyIntentSlots = new ArrayList<Slot>();
         Slot userPhoneNumber = new Slot().withName("UserPhoneNumber").withDescription("Phone Number of User")
                 .withPriority(1).withSlotConstraint(SlotConstraint.Required)
-                .withSlotType("AMAZON.NUMBER");
+                .withSlotType("AMAZON.NUMBER")
+                .withValueElicitationPrompt(new Prompt().withMaxAttempts(1)
+                        .withMessages(new Message().withContentType(ContentType.PlainText)
+                                .withContent("Something went wrong, I could not recognize your phone number")));
+
         Slot ISBN = new Slot().withName("ISBN").withDescription("ISBN of a book")
                 .withPriority(3).withSlotConstraint(SlotConstraint.Required)
                 .withSampleUtterances("The ISBN of my book is {ISBN}")
                 .withSlotType("AMAZON.NUMBER").withValueElicitationPrompt(new Prompt().withMaxAttempts(2)
                     .withMessages(new Message().withContentType(ContentType.PlainText)
                         .withContent("What is the ISBN number of the book you want to buy?")));
+
         Slot buySlot = new Slot().withName("Buy").withDescription("Buy along with synonyms")
                 .withPriority(2).withSlotConstraint(SlotConstraint.Required)
-                .withSlotType("Buy").withSlotTypeVersion("$LATEST");
+                .withSlotType("Buy").withSlotTypeVersion("$LATEST")
+                .withValueElicitationPrompt(new Prompt().withMaxAttempts(1)
+                        .withMessages(new Message().withContentType(ContentType.PlainText)
+                                .withContent("What would you like to do today?")));
 
         buyIntentSlots.add(userPhoneNumber);
         buyIntentSlots.add(ISBN);
         buyIntentSlots.add(buySlot);
         return buyIntentSlots;
+    }
+
+    private Collection<Slot> getFirstTimeUserSlots() {
+        Collection<Slot> firstTimeUserSlots = new ArrayList<Slot>();
+        Slot userPhoneNumber = new Slot().withName("UserPhoneNumber").withDescription("Phone Number of User")
+                .withPriority(1).withSlotConstraint(SlotConstraint.Required)
+                .withSlotType("AMAZON.NUMBER")
+                .withValueElicitationPrompt(new Prompt().withMaxAttempts(1)
+                    .withMessages(new Message().withContentType(ContentType.PlainText)
+                    .withContent("Something went wrong, I could not recognize your phone number")));
+
+        Slot userFirstName = new Slot().withName("UserFirstName").withDescription("First name of user")
+                .withPriority(2).withSlotConstraint(SlotConstraint.Required)
+                .withSlotType("AMAZON.US_FIRST_NAME")
+                .withValueElicitationPrompt(new Prompt().withMaxAttempts(2)
+                    .withMessages(new Message().withContentType(ContentType.PlainText)
+                    .withContent("Hi! I see that you are a first time user of Trade with Tricia. If you accept " +
+                            "our T&C here at www.dummyurl.com, please respond with your full name in this format " +
+                            "\'My name is (first) (last)\'. Otherwise, do not worry about replying.")));
+
+        Slot userLastName = new Slot().withName("UserLastName").withDescription("Last name of user")
+                .withPriority(3).withSlotConstraint(SlotConstraint.Required)
+                .withSlotType("AMAZON.US_LAST_NAME")
+                .withValueElicitationPrompt(new Prompt().withMaxAttempts(1)
+                        .withMessages(new Message().withContentType(ContentType.PlainText)
+                        .withContent("Could you please re-enter your last name in the format \'Last name (last)\'?")));
+
+
+        firstTimeUserSlots.add(userPhoneNumber);
+        firstTimeUserSlots.add(userFirstName);
+        firstTimeUserSlots.add(userLastName);
+        return firstTimeUserSlots;
     }
 
     public String getIntentName() {
@@ -284,4 +363,5 @@ public class CreateIntent {
     public void setLexModelBuildingClient(AmazonLexModelBuilding lexModelBuildingClient) {
         this.lexModelBuildingClient = lexModelBuildingClient;
     }
+
 }
