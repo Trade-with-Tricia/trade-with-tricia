@@ -11,3 +11,23 @@ System Test 2 - Removing Book to Database Through Chatbot
 	the same ISBN and that you are looking to sell. Verify that Tricia
 	does not find a match, indicating that the book has been successfully
 	removed from the database.
+
+System Test 3 - First-Time User #1
+	On a number that has not yet texted Tricia, send, "I would like to buy
+	a book." Verify that Tricia walks you through the first-time user process
+	and does not immediately receive your request.
+	
+System Test 4 - First-Time User #2
+	On a number that has not yet texted Tricia, send a message that shouldn't
+	initiate any intents. Verify that Tricia walks you through the first-time
+	user process.
+	
+System Test 5 - First-Time User #3
+	Text Tricia from a number that has not yet texted Tricia. Enter your name
+	when prompted. Verify that in subsequent messages, Tricia addresses you by
+	name.
+	
+System Test 6 - First-Time User #4 - 
+	Text Tricia from a number that has not yet texted Tricia. Enter your name
+	when prompted. When Tricia asks if your name was entered correctly,
+	say no. Verify that Tricia walks you through the process again.
