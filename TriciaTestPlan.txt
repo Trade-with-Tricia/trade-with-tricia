@@ -27,7 +27,7 @@ System Test 5 - First-Time User #3
 	when prompted. Verify that in subsequent messages, Tricia addresses you by
 	name.
 	
-System Test 6 - First-Time User #4 - 
+System Test 6 - First-Time User #4
 	Text Tricia from a number that has not yet texted Tricia. Enter your name
 	when prompted. When Tricia asks if your name was entered correctly,
 	say no. Verify that Tricia walks you through the process again.
