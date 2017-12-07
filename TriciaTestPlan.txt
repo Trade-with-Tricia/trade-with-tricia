@@ -1,33 +1,73 @@
-System Test 1 - Adding Book to Database Through Chatbot
-	Text Tricia the ISBN of a book, that you would like to buy it,
-	and all other requested information. On another phone, text Tricia
-	again with the same ISBN and that you are looking to sell and verify
-	that Tricia finds the match, which would confirm that the book has
-	been added. 
-
-System Test 2 - Removing Book to Database Through Chatbot
-	After completing System Test 1, go through the process on both phones
-	to confirm the exchange. On the second phone, text Tricia again with
-	the same ISBN and that you are looking to sell. Verify that Tricia
-	does not find a match, indicating that the book has been successfully
-	removed from the database.
-
-System Test 3 - First-Time User #1
-	On a number that has not yet texted Tricia, send, "I would like to buy
-	a book." Verify that Tricia walks you through the first-time user process
-	and does not immediately receive your request.
-	
-System Test 4 - First-Time User #2
-	On a number that has not yet texted Tricia, send a message that shouldn't
-	initiate any intents. Verify that Tricia walks you through the first-time
-	user process.
-	
-System Test 5 - First-Time User #3
-	Text Tricia from a number that has not yet texted Tricia. Enter your name
-	when prompted. Verify that in subsequent messages, Tricia addresses you by
-	name.
-	
-System Test 6 - First-Time User #4
-	Text Tricia from a number that has not yet texted Tricia. Enter your name
-	when prompted. When Tricia asks if your name was entered correctly,
-	say no. Verify that Tricia walks you through the process again.
+Sprint 1 - Resulting Product 
+System Test 1 - Adding Book to Database Through Chatbot 
+    Text Tricia the ISBN of a book, that you would like to buy it, 
+    and all other requested information. On another phone, text Tricia 
+    again with the same ISBN and that you are looking to sell and verify 
+    that Tricia finds the match, which would confirm that the book has 
+    been added.  
+  
+System Test 2 - Removing Book to Database Through Chatbot 
+    After completing System Test 1, go through the process on both phones 
+    to confirm the exchange. On the second phone, text Tricia again with 
+    the same ISBN and that you are looking to sell. Verify that Tricia 
+    does not find a match, indicating that the book has been successfully 
+    removed from the database. 
+  
+ 
+Sprint 2 
+ 
+System Test 3 – Add book to database: 
+A user just needs to text Tricia, "I would like to add a book to the database." Tricia will then prompt the user for the ISBN of the book they would like to add. Finally, Tricia will add this book to the database and let the user know when that has been done. 
+ 
+ 
+Sprint 3 
+ 
+System Test 4 - First-Time User #1 
+    On a number that has not yet texted Tricia, send, "I would like to buy 
+    a book." Verify that Tricia walks you through the first-time user process 
+    and does not immediately receive your request. 
+     
+System Test 5 - First-Time User #2 
+    On a number that has not yet texted Tricia, send a message that shouldn't 
+    initiate buy or sell intent. Verify that Tricia walks you through the first-time 
+    user process. 
+     
+System Test 6 - First-Time User #3 
+    Text Tricia from a number that has not yet texted Tricia. Enter your name 
+    when prompted. Verify that in subsequent messages, Tricia addresses you by 
+    name. 
+     
+System Test 7 - First-Time User #4 -  
+    Text Tricia from a number that has not yet texted Tricia. Enter your name 
+    when prompted. When Tricia asks if your name was entered correctly, 
+    say no. Verify that Tricia walks you through the process again. 
+ 
+System Test 8 – Buyer contacts Tricia (No Match) 
+	Test to check if a user that declares they would like to buy a book is properly added to the "Books" table 		with the correct information. Return no matches 
+	To test: 
+		1. User texts Tricia with a phrase that declares they would like to add a book, give ISBN 
+		2. Tricia should send a text back saying that their request has been added to the database. No matches found
+		    yet, but will contact user when match is found 
+System Test 9 – Buyer contacts Tricia (Match Found) 
+		Test to check if a user that declares they would like to buy a book is properly added and Tricia sends back a
+		text with a seller's phone number who is selling that book
+	To test:
+		1. Add to the database a book with an ISBN with intent of sell and the sellers phone number.  
+		2. User texts Tricia with a phrase that declares they would like to add a book, give ISBN (same as one in
+		   database) 
+		3. Tricia should send a text back with the seller's phone number. 
+System Test 10 - Seller contacts Tricia 
+		Test to check if a user that would like to sell a book has their book added to the database with a status of
+		sell. 
+	To test: 
+		1. User texts Tricia with a phrase that declares they would like to sell a book, give ISBN. 
+		2. Tricia should respond letting the user know they've added the book to our system and that we'll let then
+		   know if a user is looking for their book.  
+System Test 11 – End Conversation with Tricia 
+	Test to see if a user can end a conversation with Tricia at any point.  
+	To test: 
+		1. At any point in the conversation, a user texts Tricia, "Goodbye" or "Bye Tricia". 
+		2. Tricia no longer responds signaling the end of the conversation 
+ 
+ 
+ 
