@@ -136,13 +136,23 @@ public class CreateIntent {
         this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.ReturnIntent);
         this.parentIntentSignature = null;
         this.rejectionStatement = null;
-        this.slots = null;
+
+        Collection<Slot> endConversationSlots = new ArrayList<Slot>();
+        Slot userPhoneNumber = new Slot().withName("UserPhoneNumber").withDescription("Phone Number of User")
+                .withPriority(1).withSlotConstraint(SlotConstraint.Required)
+                .withSlotType("AMAZON.NUMBER")
+                .withValueElicitationPrompt(new Prompt().withMaxAttempts(1)
+                        .withMessages(new Message().withContentType(ContentType.PlainText)
+                                .withContent("Something went wrong, I could not recognize your phone number")));
+        endConversationSlots.add(userPhoneNumber);
+        this.slots = endConversationSlots;
 
         //Set sampleUtterances
         Collection<String> sampleUtterances = new ArrayList<String>();
-        sampleUtterances.add("Goodbye");
-        sampleUtterances.add("I don't need anything");
-        sampleUtterances.add("Bye Tricia");
+        sampleUtterances.add("{UserPhoneNumber} Goodbye");
+        sampleUtterances.add("{UserPhoneNumber} I don't need anything");
+        sampleUtterances.add("{UserPhoneNumber} Bye Tricia");
+        sampleUtterances.add("{UserPhoneNumber} Bye");
         this.sampleUtterances = sampleUtterances;
 
         this.putIntent();

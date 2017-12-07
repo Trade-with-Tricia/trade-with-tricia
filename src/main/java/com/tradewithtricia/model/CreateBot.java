@@ -45,7 +45,7 @@ public class CreateBot {
         this.locale = locale;
     }
 
-    public void putBot() {
+    private void putBot() {
         if (!validateRequiredParams()) {
             return;
         }
@@ -92,7 +92,6 @@ public class CreateBot {
         GetBotRequest getBotRequest = new GetBotRequest().withName(botName).withVersionOrAlias(version);
         GetBotResult getBotResult = this.lexModelBuildingClient.getBot(getBotRequest);
         this.botChecksum = getBotResult.getChecksum();
-        System.out.println("Checksum: " + this.botChecksum);
     }
 
     /*
@@ -100,7 +99,7 @@ public class CreateBot {
     *
     *
     */
-    public Collection<Intent> getAllTriciaIntents() {
+    private Collection<Intent> getAllTriciaIntents() {
         Collection<Intent> triciaIntents = new ArrayList<Intent>();
 
         GetIntentRequest getBuyIntentRequest = new GetIntentRequest().withName("BuyBook").withVersion("$LATEST");
