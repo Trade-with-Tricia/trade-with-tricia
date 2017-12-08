@@ -5,7 +5,6 @@ import com.amazonaws.services.lexmodelbuilding.model.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class CreateIntent {
     private String intentName;
@@ -98,23 +97,20 @@ public class CreateIntent {
         this.followUpPrompt = new FollowUpPrompt().withPrompt(followUpPrompt)
                 .withRejectionStatement(rejectionStatement);
 
-        //TODO: attach lambda function to buy intent when complete
-//        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
-//                .withCodeHook(new CodeHook().withMessageVersion("1.0")
-//                    .withUri("arn:aws:lambda:us-east-1:140857943657:function:TestFunction"));//example uri
-        //Just return intent for now
-        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.ReturnIntent);
+        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
+                .withCodeHook(new CodeHook().withMessageVersion("1.0")
+                    .withUri("arn:aws:lambda:us-east-1:140857943657:function:AddBookBuyerSprint3"));//example uri
 
         this.parentIntentSignature = null;
 
         //Set sampleUtterances
         Collection<String> sampleUtterances = new ArrayList<String>();
-        sampleUtterances.add("{UserPhoneNumber} Hey Tricia I would like to {Buy} a book");
-        sampleUtterances.add("{UserPhoneNumber} Hey Tricia I would like to {Buy} a book with ISBN {ISBN}");
-        sampleUtterances.add("{UserPhoneNumber} I would like to {Buy} a book with ISBN number {ISBN}");
-        sampleUtterances.add("{UserPhoneNumber} I'm trying to {Buy} a book");
-        sampleUtterances.add("{UserPhoneNumber} I'm looking for a book to {Buy}");
-        sampleUtterances.add("{UserPhoneNumber} I'm {Buy} for a book");
+        sampleUtterances.add("Hey Tricia I would like to {Buy} a book");
+        sampleUtterances.add("Hey Tricia I would like to {Buy} a book with ISBN {ISBN}");
+        sampleUtterances.add("I would like to {Buy} a book with ISBN number {ISBN}");
+        sampleUtterances.add("I'm trying to {Buy} a book");
+        sampleUtterances.add("I'm looking for a book to {Buy}");
+        sampleUtterances.add("I'm {Buy} for a book");
         this.sampleUtterances = sampleUtterances;
 
         this.slots = this.getBuyIntentSlots();
@@ -159,21 +155,19 @@ public class CreateIntent {
                 .withRejectionStatement(rejectionStatement);
 
         //TODO: attach lambda function to sell intent when complete
-//        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
-//                .withCodeHook(new CodeHook().withMessageVersion("1.0")
-//                    .withUri("arn:aws:lambda:us-east-1:140857943657:function:TestFunction"));//example uri
-        //Just return intent for now
-        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.ReturnIntent);
+        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
+                .withCodeHook(new CodeHook().withMessageVersion("1.0")
+                    .withUri("arn:aws:lambda:us-east-1:140857943657:function:AddBook-ToSell"));
 
         this.parentIntentSignature = null;
 
         //Set sampleUtterances
         Collection<String> sampleUtterances = new ArrayList<String>();
-        sampleUtterances.add("{UserPhoneNumber} Hey Tricia I would like to {Sell} a book");
-        sampleUtterances.add("{UserPhoneNumber} Hey Tricia I would like to {Sell} a book with ISBN {ISBN}");
-        sampleUtterances.add("{UserPhoneNumber} I would like to {Sell} a book with ISBN number {ISBN}");
-        sampleUtterances.add("{UserPhoneNumber} I'm trying to {Sell} a book");
-        sampleUtterances.add("{UserPhoneNumber} I'm looking to {Sell} a book");
+        sampleUtterances.add("Hey Tricia I would like to {Sell} a book");
+        sampleUtterances.add("Hey Tricia I would like to {Sell} a book with ISBN {ISBN}");
+        sampleUtterances.add("I would like to {Sell} a book with ISBN number {ISBN}");
+        sampleUtterances.add("I'm trying to {Sell} a book");
+        sampleUtterances.add("I'm looking to {Sell} a book");
         this.sampleUtterances = sampleUtterances;
 
         this.slots = this.getSellIntentSlots();
@@ -196,22 +190,14 @@ public class CreateIntent {
         this.parentIntentSignature = null;
         this.rejectionStatement = null;
 
-        Collection<Slot> endConversationSlots = new ArrayList<Slot>();
-        Slot userPhoneNumber = new Slot().withName("UserPhoneNumber").withDescription("Phone Number of User")
-                .withPriority(1).withSlotConstraint(SlotConstraint.Required)
-                .withSlotType("AMAZON.NUMBER")
-                .withValueElicitationPrompt(new Prompt().withMaxAttempts(1)
-                        .withMessages(new Message().withContentType(ContentType.PlainText)
-                                .withContent("Something went wrong, I could not recognize your phone number")));
-        endConversationSlots.add(userPhoneNumber);
-        this.slots = endConversationSlots;
+        this.slots = null;
 
         //Set sampleUtterances
         Collection<String> sampleUtterances = new ArrayList<String>();
-        sampleUtterances.add("{UserPhoneNumber} Goodbye");
-        sampleUtterances.add("{UserPhoneNumber} I don't need anything");
-        sampleUtterances.add("{UserPhoneNumber} Bye Tricia");
-        sampleUtterances.add("{UserPhoneNumber} Bye");
+        sampleUtterances.add("Goodbye");
+        sampleUtterances.add("I don't need anything");
+        sampleUtterances.add("Bye Tricia");
+        sampleUtterances.add("Bye");
         this.sampleUtterances = sampleUtterances;
 
         this.putIntent();
@@ -250,8 +236,8 @@ public class CreateIntent {
         this.parentIntentSignature = null;
 
         Collection<String> sampleUtterances = new ArrayList<String>();
-        sampleUtterances.add("{UserPhoneNumber} This is a first time user");
-        sampleUtterances.add("{UserPhoneNumber} My name is {UserFirstName} {UserLastName}");
+        sampleUtterances.add("This is a first time user");
+        sampleUtterances.add("My name is {UserFirstName} {UserLastName}");
         this.sampleUtterances = sampleUtterances;
 
         this.slots = this.getFirstTimeUserSlots();
@@ -270,13 +256,6 @@ public class CreateIntent {
 
     private Collection<Slot> getBuyIntentSlots() {
         Collection<Slot> buyIntentSlots = new ArrayList<Slot>();
-        Slot userPhoneNumber = new Slot().withName("UserPhoneNumber").withDescription("Phone Number of User")
-                .withPriority(1).withSlotConstraint(SlotConstraint.Required)
-                .withSlotType("AMAZON.NUMBER")
-                .withValueElicitationPrompt(new Prompt().withMaxAttempts(1)
-                        .withMessages(new Message().withContentType(ContentType.PlainText)
-                                .withContent("Something went wrong, I could not recognize your phone number")));
-
         Slot ISBN = new Slot().withName("ISBN").withDescription("ISBN of a book")
                 .withPriority(3).withSlotConstraint(SlotConstraint.Required)
                 .withSampleUtterances("The ISBN of my book is {ISBN}")
@@ -291,7 +270,6 @@ public class CreateIntent {
                         .withMessages(new Message().withContentType(ContentType.PlainText)
                                 .withContent("What would you like to do today?")));
 
-        buyIntentSlots.add(userPhoneNumber);
         buyIntentSlots.add(ISBN);
         buyIntentSlots.add(buySlot);
         return buyIntentSlots;
@@ -299,11 +277,6 @@ public class CreateIntent {
 
     private Collection<Slot> getSellIntentSlots() {
         Collection<Slot> sellIntentSlots = new ArrayList<Slot>();
-        Slot userPhoneNumber = new Slot().withName("UserPhoneNumber").withDescription("Phone Number of User")
-                .withPriority(1).withSlotConstraint(SlotConstraint.Required)
-                .withSlotType("AMAZON.NUMBER")
-                .withValueElicitationPrompt(new Prompt().withMaxAttempts(1).withMessages(new Message().withContentType(ContentType.PlainText)
-                .withContent("Something went wrong, I could not recognize your phone number")));
         Slot ISBN = new Slot().withName("ISBN").withDescription("ISBN of a book")
                 .withPriority(3).withSlotConstraint(SlotConstraint.Required)
                 .withSampleUtterances("The ISBN of my book is {ISBN}")
@@ -316,7 +289,6 @@ public class CreateIntent {
                 .withValueElicitationPrompt(new Prompt().withMaxAttempts(1).withMessages(new Message().withContentType(ContentType.PlainText)
                         .withContent("What would you like to do today?")));;
 
-        sellIntentSlots.add(userPhoneNumber);
         sellIntentSlots.add(ISBN);
         sellIntentSlots.add(sellSlot);
         return sellIntentSlots;
@@ -324,12 +296,6 @@ public class CreateIntent {
 
     private Collection<Slot> getFirstTimeUserSlots() {
         Collection<Slot> firstTimeUserSlots = new ArrayList<Slot>();
-        Slot userPhoneNumber = new Slot().withName("UserPhoneNumber").withDescription("Phone Number of User")
-                .withPriority(1).withSlotConstraint(SlotConstraint.Required)
-                .withSlotType("AMAZON.NUMBER")
-                .withValueElicitationPrompt(new Prompt().withMaxAttempts(1)
-                    .withMessages(new Message().withContentType(ContentType.PlainText)
-                    .withContent("Something went wrong, I could not recognize your phone number")));
 
         Slot userFirstName = new Slot().withName("UserFirstName").withDescription("First name of user")
                 .withPriority(2).withSlotConstraint(SlotConstraint.Required)
@@ -348,7 +314,6 @@ public class CreateIntent {
                         .withContent("Could you please re-enter your last name in the format \'Last name (last)\'?")));
 
 
-        firstTimeUserSlots.add(userPhoneNumber);
         firstTimeUserSlots.add(userFirstName);
         firstTimeUserSlots.add(userLastName);
         return firstTimeUserSlots;

@@ -7,10 +7,7 @@ import com.amazonaws.services.lexruntime.AmazonLexRuntime;
 import com.amazonaws.services.lexruntime.AmazonLexRuntimeClientBuilder;
 import com.amazonaws.services.lexruntime.model.PostTextRequest;
 import com.amazonaws.services.lexruntime.model.PostTextResult;
-import com.tradewithtricia.model.CreateBot;
-import com.tradewithtricia.model.CreateBotAlias;
-import com.tradewithtricia.model.CreateIntent;
-import com.tradewithtricia.model.CreateSlotType;
+import com.tradewithtricia.model.*;
 
 import java.util.Scanner;
 
@@ -31,14 +28,14 @@ public class TradeWithTricia
         CreateSlotType triciaSlots = new CreateSlotType();
         triciaSlots.setLexModelBuildingClient(lexModelBuildingClient);
         triciaSlots.createBuyTypeSlot(true);
-        triciaSlots.createSellTypeSlot(false);
+        triciaSlots.createSellTypeSlot(true);
 
         //Create all intents
         CreateIntent triciaIntents = new CreateIntent();
         triciaIntents.setLexModelBuildingClient(lexModelBuildingClient);
         triciaIntents.createBuyIntent(true);
         triciaIntents.createEndConversationIntent(true);
-        triciaIntents.createSellIntent(false);
+        triciaIntents.createSellIntent(true);
         triciaIntents.createFirstTimeUserIntent(true);
 
         //Update our bot using the checksum retrieved
@@ -46,9 +43,12 @@ public class TradeWithTricia
         tricia.setLexModelBuildingClient(lexModelBuildingClient);
         tricia.createTricia(true);
 
+        GetBotRequest getBotRequest = new GetBotRequest().withName("Tricia").withVersionOrAlias("$LATEST");
+        GetBotResult getBotResult = lexModelBuildingClient.getBot(getBotRequest);
+
         // Bot Publishing Process
-        //PublishBot publishTricia = new PublishBot(getBotResult);
-        //publishTricia.publishBot(lexModelBuildingClient);
+        PublishBot publishTricia = new PublishBot(getBotResult);
+        publishTricia.publishBot(lexModelBuildingClient);
 
 //        CreateBotAlias createBotAlias = new CreateBotAlias("Tricia", "dev", "$LATEST",
 //                null, "Alias for dev version of Tricia");

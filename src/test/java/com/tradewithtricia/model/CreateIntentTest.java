@@ -35,19 +35,18 @@ public class CreateIntentTest {
                 .getPrompt().getMessages().get(0).getContent());
         assertEquals("Okay, thanks for using Trade with Tricia. I hope I was able to help you with what you needed today.",
                 buyIntent.getFollowUpPrompt().getRejectionStatement().getMessages().get(0).getContent());
-        assertEquals("ReturnIntent", buyIntent.getFulfillmentActivity().getType());
+        assertEquals(FulfillmentActivityType.CodeHook.toString(), buyIntent.getFulfillmentActivity().getType());
         assertNull(buyIntent.getParentIntentSignature());
         ArrayList<String> utterances = new ArrayList<String>(buyIntent.getSampleUtterances());
-        assertEquals("{UserPhoneNumber} Hey Tricia I would like to {Buy} a book", utterances.get(0));
-        assertEquals("{UserPhoneNumber} Hey Tricia I would like to {Buy} a book with ISBN {ISBN}", utterances.get(1));
-        assertEquals("{UserPhoneNumber} I would like to {Buy} a book with ISBN number {ISBN}", utterances.get(2));
-        assertEquals("{UserPhoneNumber} I'm trying to {Buy} a book", utterances.get(3));
-        assertEquals("{UserPhoneNumber} I'm looking for a book to {Buy}", utterances.get(4));
-        assertEquals("{UserPhoneNumber} I'm {Buy} for a book", utterances.get(5));
+        assertEquals("Hey Tricia I would like to {Buy} a book", utterances.get(0));
+        assertEquals("Hey Tricia I would like to {Buy} a book with ISBN {ISBN}", utterances.get(1));
+        assertEquals("I would like to {Buy} a book with ISBN number {ISBN}", utterances.get(2));
+        assertEquals("I'm trying to {Buy} a book", utterances.get(3));
+        assertEquals("I'm looking for a book to {Buy}", utterances.get(4));
+        assertEquals("I'm {Buy} for a book", utterances.get(5));
         ArrayList<Slot> slots = new ArrayList<Slot>(buyIntent.getSlots());
-        assertEquals("UserPhoneNumber", slots.get(0).getName());
-        assertEquals("ISBN", slots.get(1).getName());
-        assertEquals("Buy", slots.get(2).getName());
+        assertEquals("ISBN", slots.get(0).getName());
+        assertEquals("Buy", slots.get(1).getName());
 
     }
 
@@ -67,13 +66,11 @@ public class CreateIntentTest {
         assertEquals("ReturnIntent", endConversationIntent.getFulfillmentActivity().getType());
         assertNull(endConversationIntent.getParentIntentSignature());
         assertNull(endConversationIntent.getRejectionStatement());
-        ArrayList<Slot> slots = new ArrayList<Slot>(endConversationIntent.getSlots());
-        assertEquals("UserPhoneNumber", slots.get(0).getName());
         ArrayList<String> utterances = new ArrayList<String>(endConversationIntent.getSampleUtterances());
-        assertEquals("{UserPhoneNumber} Goodbye", utterances.get(0));
-        assertEquals("{UserPhoneNumber} I don't need anything", utterances.get(1));
-        assertEquals("{UserPhoneNumber} Bye Tricia", utterances.get(2));
-        assertEquals("{UserPhoneNumber} Bye", utterances.get(3));
+        assertEquals("Goodbye", utterances.get(0));
+        assertEquals("I don't need anything", utterances.get(1));
+        assertEquals("Bye Tricia", utterances.get(2));
+        assertEquals("Bye", utterances.get(3));
 
     }
 
@@ -99,12 +96,11 @@ public class CreateIntentTest {
         assertEquals("ReturnIntent", firstTimeUserIntent.getFulfillmentActivity().getType());
         assertNull(firstTimeUserIntent.getParentIntentSignature());
         ArrayList<String> utterances = new ArrayList<String>(firstTimeUserIntent.getSampleUtterances());
-        assertEquals("{UserPhoneNumber} This is a first time user", utterances.get(0));
-        assertEquals("{UserPhoneNumber} My name is {UserFirstName} {UserLastName}", utterances.get(1));
+        assertEquals("This is a first time user", utterances.get(0));
+        assertEquals("My name is {UserFirstName} {UserLastName}", utterances.get(1));
         ArrayList<Slot> slots = new ArrayList<Slot>(firstTimeUserIntent.getSlots());
-        assertEquals("UserPhoneNumber", slots.get(0).getName());
-        assertEquals("UserFirstName", slots.get(1).getName());
-        assertEquals("UserLastName", slots.get(2).getName());
+        assertEquals("UserFirstName", slots.get(0).getName());
+        assertEquals("UserLastName", slots.get(1).getName());
     }
 
     private String retrieveChecksum(String intentName) {
