@@ -5,6 +5,7 @@ import com.amazonaws.services.lexmodelbuilding.model.*;
 
 import java.util.List;
 
+// Test
 public class PublishIntent {
     private GetIntentResult intentToPublish;
 
