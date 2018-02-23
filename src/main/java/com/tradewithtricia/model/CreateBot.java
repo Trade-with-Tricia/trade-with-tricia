@@ -7,18 +7,35 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class CreateBot {
-    //Required params
     private String botName;
     private String botChecksum;
+    private Statement abortStatement;
     private boolean childDirected;
+    private Prompt clarificationPrompt;
+    private String description;
+    private int idleSessionTTLInSeconds;
+    private Collection<Intent> intents;
     private Locale locale;
-    private GetBotResult tricia;
+    private String processBehavior;
+    private AmazonLexModelBuilding lexModelBuildingClient;
 
+    public CreateBot() {}
 
-    public CreateBot() {
-        this.botName = "Tricia";
-        this.childDirected = false;
-        this.locale = Locale.EnUS;
+    public CreateBot(String botName, String botChecksum, Statement abortStatement,
+                     boolean childDirected, Prompt clarificationPrompt, String description,
+                     int idleSessionTTLInSeconds, Collection<Intent> intents, Locale locale,
+                     String processBehavior, AmazonLexModelBuilding lexModelBuildingClient) {
+        this.botName = botName;
+        this.botChecksum = botChecksum;
+        this.abortStatement = abortStatement;
+        this.childDirected = childDirected;
+        this.clarificationPrompt = clarificationPrompt;
+        this.description = description;
+        this.idleSessionTTLInSeconds = idleSessionTTLInSeconds;
+        this.intents = intents;
+        this.locale = locale;
+        this.processBehavior = processBehavior;
+        this.lexModelBuildingClient = lexModelBuildingClient;
     }
 
     public CreateBot(String botName, String botChecksum, boolean childDirected, Locale locale) {
@@ -28,53 +45,93 @@ public class CreateBot {
         this.locale = locale;
     }
 
-    public CreateBot(GetBotResult tricia) {
-        this.tricia = tricia;
-    }
-
-    public PutBotResult putBot(AmazonLexModelBuilding modelBuildingClient) {
-        Prompt clarificationPrompt = new Prompt();
-        clarificationPrompt.setMaxAttempts(3);
-        Message clarificationMessage = new Message();
-        clarificationMessage.setContentType("PlainText");
-        clarificationMessage.setContent("Can you please say that again?");
-        Collection<Message> listOfClarificationMessages = new ArrayList<Message>();
-        listOfClarificationMessages.add(clarificationMessage);
-        clarificationPrompt.setMessages(listOfClarificationMessages);
-
-        Statement abortStatement = new Statement();
-        Collection<Message> listOfAbortStatements = new ArrayList<Message>();
-        Message abortMessage = new Message();
-        abortMessage.setContentType("PlainText");
-        abortMessage.setContent("I couldn't understand. Bye!");
-        listOfAbortStatements.add(abortMessage);
-        abortStatement.setMessages(listOfAbortStatements);
-
-        CreateIntent dummyIntent = new CreateIntent();
-        PutIntentResult dummyIntentResult = dummyIntent.putIntent(modelBuildingClient);
-
-
-
-        Collection<Intent> listOfIntents = new ArrayList<Intent>();
-        Intent actualDummyIntent = new Intent();
-        actualDummyIntent.setIntentName(dummyIntentResult.getName());
-        actualDummyIntent.setIntentVersion(dummyIntentResult.getVersion());
-        listOfIntents.add(actualDummyIntent);
-
+    private void putBot() {
         if (!validateRequiredParams()) {
-            return null;
+            return;
         }
         PutBotRequest putBotRequest = new PutBotRequest();
-        putBotRequest.setName(this.tricia.getName());
-        putBotRequest.setChecksum(this.tricia.getChecksum());
-        putBotRequest.setChildDirected(this.tricia.getChildDirected());
-        putBotRequest.setLocale(this.tricia.getLocale());
-        putBotRequest.setDescription("Hello there");
-        putBotRequest.setClarificationPrompt(clarificationPrompt);
-        putBotRequest.setAbortStatement(abortStatement);
-        putBotRequest.setIntents(listOfIntents);
-        return modelBuildingClient.putBot(putBotRequest);
+        putBotRequest.setName(this.botName);
+        // To update our bot, make sure to set updateMode to true
+        putBotRequest.setChecksum(this.botChecksum);
+        putBotRequest.setAbortStatement(this.abortStatement);
+        putBotRequest.setClarificationPrompt(this.clarificationPrompt);
+        putBotRequest.setChildDirected(this.childDirected);
+        putBotRequest.setLocale(this.locale);
+        putBotRequest.setDescription(this.description);
+        putBotRequest.setIdleSessionTTLInSeconds(this.idleSessionTTLInSeconds);
+        putBotRequest.setIntents(this.intents);
+        putBotRequest.setProcessBehavior(this.processBehavior);
+        PutBotResult putBotResult = this.lexModelBuildingClient.putBot(putBotRequest);
     }
+
+    public void createTricia(boolean updateBot) {
+        this.botName = "Tricia";
+        if (updateBot) this.retrieveChecksum(this.botName, "$LATEST");
+        else this.botChecksum = null;
+
+        this.description = "Tricia is a bot to help students at UP buy, sell, and trade textbooks";
+        this.childDirected = false;
+        this.locale = Locale.EnUS;
+        this.processBehavior = "SAVE"; //can set to SAVE or BUILD
+        this.idleSessionTTLInSeconds = 7200; // 2 hour conversation timeout
+
+        this.abortStatement = new Statement().withMessages(new Message().withContentType(ContentType.PlainText)
+                .withContent("I am so sorry that I cant understand your requests right now. Maybe I can help you another time."));
+
+        this.clarificationPrompt = new Prompt().withMaxAttempts(3).withMessages(new Message()
+                .withContentType(ContentType.PlainText)
+                .withContent("Can you please say that again?"));
+
+        this.intents = getAllTriciaIntents();
+
+        this.putBot();
+    }
+
+    private void retrieveChecksum(String botName, String version) {
+        //Get the bot we want to update
+        GetBotRequest getBotRequest = new GetBotRequest().withName(botName).withVersionOrAlias(version);
+        GetBotResult getBotResult = this.lexModelBuildingClient.getBot(getBotRequest);
+        this.botChecksum = getBotResult.getChecksum();
+    }
+
+    /*
+    *   Get all intents associated with Tricia. If you create a new intent, need to get it here.
+    *
+    *
+    */
+    private Collection<Intent> getAllTriciaIntents() {
+        Collection<Intent> triciaIntents = new ArrayList<Intent>();
+
+        GetIntentRequest getDeleteIntentRequest = new GetIntentRequest().withName("SellerDeleteBook").withVersion("$LATEST");
+        GetIntentResult getDeleteIntentResult = this.lexModelBuildingClient.getIntent(getDeleteIntentRequest);
+        triciaIntents.add(new Intent().withIntentName(getDeleteIntentResult.getName())
+                .withIntentVersion(getDeleteIntentResult.getVersion()));
+
+        GetIntentRequest getBuyIntentRequest = new GetIntentRequest().withName("BuyBook").withVersion("$LATEST");
+        GetIntentResult getButIntentResult = this.lexModelBuildingClient.getIntent(getBuyIntentRequest);
+        triciaIntents.add(new Intent().withIntentName(getButIntentResult.getName())
+                .withIntentVersion(getButIntentResult.getVersion()));
+
+        GetIntentRequest getSellIntentRequest = new GetIntentRequest().withName("SellBook").withVersion("$LATEST");
+        GetIntentResult getSellIntentResult = this.lexModelBuildingClient.getIntent(getSellIntentRequest);
+        triciaIntents.add(new Intent().withIntentName(getSellIntentResult.getName())
+                .withIntentVersion(getButIntentResult.getVersion()));
+
+        GetIntentRequest getEndConversationIntentRequest = new GetIntentRequest().withName("EndConversation")
+                .withVersion("$LATEST");
+        GetIntentResult getEndConversationIntentResult = this.lexModelBuildingClient.getIntent(getEndConversationIntentRequest);
+        triciaIntents.add(new Intent().withIntentName(getEndConversationIntentResult.getName())
+                .withIntentVersion(getEndConversationIntentResult.getVersion()));
+
+        GetIntentRequest getFirstTimeUserIntentRequest = new GetIntentRequest().withName("FirstTimeUser")
+                .withVersion("$LATEST");
+        GetIntentResult getFirstTimeUserIntentResult = this.lexModelBuildingClient.getIntent(getFirstTimeUserIntentRequest);
+        triciaIntents.add(new Intent().withIntentName(getFirstTimeUserIntentResult.getName())
+                .withIntentVersion(getFirstTimeUserIntentResult.getVersion()));
+
+        return triciaIntents;
+    }
+
 
     private boolean validateRequiredParams() {
 
@@ -96,7 +153,83 @@ public class CreateBot {
         this.botName = botName;
     }
 
+    public String getBotChecksum() {
+        return botChecksum;
+    }
+
     public void setBotChecksum(String botChecksum) {
         this.botChecksum = botChecksum;
+    }
+
+    public Statement getAbortStatement() {
+        return abortStatement;
+    }
+
+    public void setAbortStatement(Statement abortStatement) {
+        this.abortStatement = abortStatement;
+    }
+
+    public boolean isChildDirected() {
+        return childDirected;
+    }
+
+    public void setChildDirected(boolean childDirected) {
+        this.childDirected = childDirected;
+    }
+
+    public Prompt getClarificationPrompt() {
+        return clarificationPrompt;
+    }
+
+    public void setClarificationPrompt(Prompt clarificationPrompt) {
+        this.clarificationPrompt = clarificationPrompt;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getIdleSessionTTLInSeconds() {
+        return idleSessionTTLInSeconds;
+    }
+
+    public void setIdleSessionTTLInSeconds(int idleSessionTTLInSeconds) {
+        this.idleSessionTTLInSeconds = idleSessionTTLInSeconds;
+    }
+
+    public Collection<Intent> getIntents() {
+        return intents;
+    }
+
+    public void setIntents(Collection<Intent> intents) {
+        this.intents = intents;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+
+    public String getProcessBehavior() {
+        return processBehavior;
+    }
+
+    public void setProcessBehavior(String processBehavior) {
+        this.processBehavior = processBehavior;
+    }
+
+    public AmazonLexModelBuilding getLexModelBuildingClient() {
+        return lexModelBuildingClient;
+    }
+
+    public void setLexModelBuildingClient(AmazonLexModelBuilding lexModelBuildingClient) {
+        this.lexModelBuildingClient = lexModelBuildingClient;
     }
 }

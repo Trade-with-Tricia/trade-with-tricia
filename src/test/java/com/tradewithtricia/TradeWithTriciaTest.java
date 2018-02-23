@@ -8,7 +8,7 @@ import junit.framework.TestSuite;
  * Unit test for simple TradeWithTricia.
  */
 public class TradeWithTriciaTest
-    extends TestCase
+        extends TestCase
 {
     /**
      * Create the test case

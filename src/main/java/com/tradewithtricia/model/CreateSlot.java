@@ -9,13 +9,26 @@ import java.util.List;
 
 public class CreateSlot {
 
-    String slotName;
-    String slotConstraint;
+    private String slotName;
+    private String checksum;
+    private String description;
+    private Collection<EnumerationValue> enumerationValues;
+    private String valueSelectionStrategy;
+    private AmazonLexModelBuilding lexModelBuildingClient;
 
-    public CreateSlot(String name, String givenSlotConstraint) {
-        this.slotName = name;
-        this.slotConstraint = givenSlotConstraint;
+    public CreateSlot(String slotName, String checksum, String description,
+                          Collection<EnumerationValue> enumerationValues, String valueSelectionStrategy,
+                          AmazonLexModelBuilding lexModelBuildingClient ) {
+        this.slotName = slotName;
+        this.checksum = checksum;
+        this.description = description;
+        this.enumerationValues = enumerationValues;
+        this.valueSelectionStrategy = valueSelectionStrategy;
+        this.lexModelBuildingClient = lexModelBuildingClient;
     }
+
+
+    public CreateSlot() {}
 
     private BuiltinSlotTypeMetadata getBuiltInSlot(String signature, AmazonLexModelBuilding client){
         GetBuiltinSlotTypesRequest builtinSlotTypesRequest = new GetBuiltinSlotTypesRequest();
@@ -25,33 +38,119 @@ public class CreateSlot {
         return builtinSlotTypesResult.getSlotTypes().get(0);
     }
 
-    public Slot createISBNSlot(AmazonLexModelBuilding client){
-        Collection<String> sampleUtterances = new ArrayList<String>();
-        sampleUtterances.add("The ISBN of my book is {" + this.slotName + "}");
+    public void putSlotType() {
+        PutSlotTypeRequest putSlotTypeRequest = new PutSlotTypeRequest();
+        putSlotTypeRequest.setName(this.slotName);
+        putSlotTypeRequest.setChecksum(this.checksum);
+        putSlotTypeRequest.setDescription(this.description);
+        putSlotTypeRequest.setEnumerationValues(this.enumerationValues);
+        putSlotTypeRequest.setValueSelectionStrategy(this.valueSelectionStrategy);
+        PutSlotTypeResult putSlotTypeResult = this.lexModelBuildingClient.putSlotType(putSlotTypeRequest);
+    }
 
-        Prompt ISBNprompts = new Prompt();
-        List<Message> ISBNpromptsMessages = new ArrayList<Message>();
-        Message prompt1Message = new Message();
-        prompt1Message.setContent("What is the ISBN of the book?");
-        prompt1Message.setContentType("PlainText");
-        ISBNpromptsMessages.add(prompt1Message);
-        ISBNprompts.setMessages(ISBNpromptsMessages);
-        ISBNprompts.setMaxAttempts(2);
+    public void createDeleteTypeSlot(boolean updateSlotType) {
+        this.slotName = "delete";
 
-        Slot ISBNslot = new Slot();
-        ISBNslot.setName(this.slotName);
-        ISBNslot.setSlotConstraint(this.slotConstraint);
-        BuiltinSlotTypeMetadata builtinSlot = getBuiltInSlot("AMAZON.NUMBER", client);
-        ISBNslot.setSlotType(builtinSlot.getSignature());
-        ISBNslot.setDescription("ISBN of book.");
-        ISBNslot.setPriority(1);
-        ISBNslot.setSampleUtterances(sampleUtterances);
-        ISBNslot.setValueElicitationPrompt(ISBNprompts);
+        if (updateSlotType) this.retrieveChecksum(this.slotName, "$LATEST");
+        else this.checksum = null;
 
-        return ISBNslot;
+        this.description = "Slot type to recognize delete and synonyms of delete";
+        Collection<String> buySynonyms = new ArrayList<String>();
+        buySynonyms.add("remove");
+        Collection<EnumerationValue> enumerationValues = new ArrayList<EnumerationValue>();
+        enumerationValues.add(new EnumerationValue().withValue("delete").withSynonyms(buySynonyms));
+        this.enumerationValues = enumerationValues;
+        this.valueSelectionStrategy = "TOP_RESOLUTION";
+        this.putSlotType();
+    }
 
+    public void createBuyTypeSlot(boolean updateSlotType) {
+        this.slotName = "Buy";
 
+        if (updateSlotType) this.retrieveChecksum(this.slotName, "$LATEST");
+        else this.checksum = null;
+
+        this.description = "Slot type to recognize buy and synonyms of buy";
+        Collection<String> buySynonyms = new ArrayList<String>();
+        buySynonyms.add("purchase");
+        buySynonyms.add("find");
+        buySynonyms.add("looking");
+        Collection<EnumerationValue> enumerationValues = new ArrayList<EnumerationValue>();
+        enumerationValues.add(new EnumerationValue().withValue("buy").withSynonyms(buySynonyms));
+        this.enumerationValues = enumerationValues;
+        this.valueSelectionStrategy = "TOP_RESOLUTION";
+        this.putSlotType();
+    }
+
+    public void createSellTypeSlot(boolean updateSlotType) {
+        this.slotName = "Sell";
+
+        if (updateSlotType) this.retrieveChecksum(this.slotName, "$LATEST");
+        else this.checksum = null;
+
+        this.description = "Slot type to recognize sell and synonyms of sell";
+        Collection<String> sellSynonyms = new ArrayList<String>();
+        sellSynonyms.add("unload");
+        Collection<EnumerationValue> enumerationValues = new ArrayList<EnumerationValue>();
+        enumerationValues.add(new EnumerationValue().withValue("sell").withSynonyms(sellSynonyms));
+        this.enumerationValues = enumerationValues;
+        this.valueSelectionStrategy = "TOP_RESOLUTION";
+        this.putSlotType();
     }
 
 
+    private void retrieveChecksum(String slotName, String version) {
+        GetSlotTypeRequest getSlotTypeRequest = new GetSlotTypeRequest().withName(slotName)
+                .withVersion(version);
+        GetSlotTypeResult getSlotTypeResult = this.lexModelBuildingClient.getSlotType(getSlotTypeRequest);
+        this.checksum = getSlotTypeResult.getChecksum();
+    }
+
+    public String getSlotName() {
+        return slotName;
+    }
+
+    public void setSlotName(String slotName) {
+        this.slotName = slotName;
+    }
+
+    public String getChecksum() {
+        return checksum;
+    }
+
+    public void setChecksum(String checksum) {
+        this.checksum = checksum;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Collection<EnumerationValue> getEnumerationValues() {
+        return enumerationValues;
+    }
+
+    public void setEnumerationValues(Collection<EnumerationValue> enumerationValues) {
+        this.enumerationValues = enumerationValues;
+    }
+
+    public String getValueSelectionStrategy() {
+        return valueSelectionStrategy;
+    }
+
+    public void setValueSelectionStrategy(String valueSelectionStrategy) {
+        this.valueSelectionStrategy = valueSelectionStrategy;
+    }
+
+    public AmazonLexModelBuilding getLexModelBuildingClient() {
+        return lexModelBuildingClient;
+    }
+
+    public void setLexModelBuildingClient(AmazonLexModelBuilding lexModelBuildingClient) {
+        this.lexModelBuildingClient = lexModelBuildingClient;
+    }
 }

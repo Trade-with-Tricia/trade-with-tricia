@@ -27,7 +27,8 @@ public class PublishBot {
         createBotVersionRequest.setChecksum(this.botToPublish.getChecksum());
         CreateBotVersionResult createBotVersionResult = modelBuildingClient.createBotVersion(createBotVersionRequest);
 
-        // Create an alias that points to this published version
+        // Create an alias that points to this most recent published version
+        //TODO: change to update alias, creating a new one right now
         CreateBotAlias createBotAlias = new CreateBotAlias(createBotVersionResult.getName(), "stableTricia",
                 createBotVersionResult.getVersion(),
                 null, "Alias for latest stable version of Tricia");
