@@ -8,10 +8,6 @@ import com.amazonaws.services.lexruntime.AmazonLexRuntimeClientBuilder;
 import com.amazonaws.services.lexruntime.model.PostTextRequest;
 import com.amazonaws.services.lexruntime.model.PostTextResult;
 import com.tradewithtricia.model.*;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
 
 import java.util.Scanner;
 
@@ -28,53 +24,39 @@ public class TradeWithTricia
         AmazonLexRuntime lexRuntimeClient = AmazonLexRuntimeClientBuilder.defaultClient();
         AmazonLexModelBuilding lexModelBuildingClient = AmazonLexModelBuildingClientBuilder.defaultClient();
 
+        //Create all slots
+        CreateSlotType triciaSlots = new CreateSlotType();
+        triciaSlots.setLexModelBuildingClient(lexModelBuildingClient);
+        triciaSlots.createBuyTypeSlot(true);
+        triciaSlots.createSellTypeSlot(true);
+        triciaSlots.createDeleteTypeSlot(true);
 
-//        AmazonLexModelBuilding lexModelBuildingClient = null;
-//        try {
-//            AWSCredentials awsCreds = new BasicAWSCredentials("AKIAI2ZEPBLONY6G7WAA",//IAM user's ACCESS_KEY
-//                    "h752FhbffxY7u0Ie8HCLNSFN5rv/bUTm9aR25+AC");//IAM user's SECRET_KEY
-//            lexModelBuildingClient = AmazonLexModelBuildingClientBuilder.standard()
-//                    .withRegion(Regions.US_EAST_1)
-//                    .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
-//                    .build();
+        //Create all intents
+        CreateIntent triciaIntents = new CreateIntent();
+        triciaIntents.setLexModelBuildingClient(lexModelBuildingClient);
+        triciaIntents.createBuyIntent(true);
+        triciaIntents.createEndConversationIntent(true);
+        triciaIntents.createSellIntent(true);
+        triciaIntents.createFirstTimeUserIntent(true);
+        triciaIntents.createSellerDeleteBookIntent(true);
 
-//        //Create all slots
-            CreateSlot triciaSlots = new CreateSlot();
-            triciaSlots.setLexModelBuildingClient(lexModelBuildingClient);
-            triciaSlots.createBuyTypeSlot(true);
-            triciaSlots.createSellTypeSlot(true);
-            triciaSlots.createDeleteTypeSlot(true);
+        //Update our bot using the checksum retrieved
+        CreateBot tricia = new CreateBot();
+        tricia.setLexModelBuildingClient(lexModelBuildingClient);
+        tricia.createTricia(true);
 
+        GetBotRequest getBotRequest = new GetBotRequest().withName("Tricia").withVersionOrAlias("$LATEST");
+        GetBotResult getBotResult = lexModelBuildingClient.getBot(getBotRequest);
 
-            //System.
-            //Create all intents
-            CreateIntent triciaIntents = new CreateIntent();
-            triciaIntents.setLexModelBuildingClient(lexModelBuildingClient);
-            triciaIntents.createBuyIntent(true);
-            triciaIntents.createSellerDeleteBookIntent(true);
-            triciaIntents.createEndConversationIntent(true);
-            triciaIntents.createSellIntent(true);
-            triciaIntents.createFirstTimeUserIntent(true);
-
-            //Update our bot using the checksum retrieved
-            CreateBot tricia = new CreateBot();
-            tricia.setLexModelBuildingClient(lexModelBuildingClient);
-            tricia.createTricia(true);
-
-            GetBotRequest getBotRequest = new GetBotRequest().withName("Tricia").withVersionOrAlias("$LATEST");
-            GetBotResult getBotResult = lexModelBuildingClient.getBot(getBotRequest);
-        }
-
-
-//         //Bot Publishing Process
-//        PublishBot publishTricia = new PublishBot(getBotResult);
-//        publishTricia.publishBot(lexModelBuildingClient);
+        // Bot Publishing Process
+        PublishBot publishTricia = new PublishBot(getBotResult);
+        publishTricia.publishBot(lexModelBuildingClient);
 
 //        CreateBotAlias createBotAlias = new CreateBotAlias("Tricia", "dev", "$LATEST",
 //                null, "Alias for dev version of Tricia");
 //        createBotAlias.putBotAlias(lexModelBuildingClient);
-//
-//         //Test bot from console
+
+        // Test bot from console
 //        PostTextRequest textRequest = new PostTextRequest();
 //        textRequest.setBotName("Tricia");
 //        textRequest.setBotAlias("dev");
@@ -100,5 +82,5 @@ public class TradeWithTricia
 //        System.out.println("Bye.");
 
 
-
+    }
 }

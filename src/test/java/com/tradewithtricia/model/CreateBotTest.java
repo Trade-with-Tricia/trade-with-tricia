@@ -2,40 +2,49 @@ package com.tradewithtricia.model;
 
 import com.amazonaws.services.lexmodelbuilding.AmazonLexModelBuilding;
 import com.amazonaws.services.lexmodelbuilding.AmazonLexModelBuildingClientBuilder;
+import com.amazonaws.services.lexmodelbuilding.model.GetBotRequest;
+import com.amazonaws.services.lexmodelbuilding.model.GetBotResult;
+import com.amazonaws.services.lexmodelbuilding.model.Intent;
 import com.amazonaws.services.lexmodelbuilding.model.Locale;
-import com.amazonaws.services.lexmodelbuilding.model.PutBotResult;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 
 public class CreateBotTest {
-    public AmazonLexModelBuilding testClient = AmazonLexModelBuildingClientBuilder.defaultClient();
-    public String botName;
-    public String botChecksum;
-    public boolean childDirected;
-    public Locale locale;
-    public CreateBot createBotObj;
-    public PutBotResult testTricia;
+    private AmazonLexModelBuilding lexModelBuildingClient = AmazonLexModelBuildingClientBuilder.defaultClient();
 
-//    @Test
-//    public void putBotHappyPathTest() {
-//        botName = "testTricia";
-//        botChecksum = "$LATEST";
-//        childDirected = false;
-//        locale = Locale.EnUS;
-//        createBotObj = new CreateBot(botName, botChecksum,childDirected, locale);
-//        testTricia = createBotObj.putBot(testClient);
-//        assertEquals("bot name", botName, testTricia.getName());
-//        assertFalse("childDirected was true", testTricia.getChildDirected());
-//        assertEquals("locale",locale, testTricia.getLocale());
-//    }
-//
-//    @Test
-//    public void putBotReturnsNullWhenBadParamsTest() {
-//        createBotObj = new CreateBot(null, null, true, null);
-//        testTricia = createBotObj.putBot(testClient);
-//        assertNull("putBot was not null", testTricia);
-//
-//    }
+    @Test
+    public void createTriciaHasCorrectParams() {
+        CreateBot tricia = new CreateBot();
+        tricia.setLexModelBuildingClient(lexModelBuildingClient);
+        String botChecksum = this.retrieveChecksum();
+        tricia.createTricia(true);
+        assertEquals("Tricia", tricia.getBotName());
+        assertEquals(botChecksum, tricia.getBotChecksum());
+        assertEquals("Tricia is a bot to help students at UP buy, sell, and trade textbooks", tricia.getDescription());
+        assertFalse(tricia.isChildDirected());
+        assertEquals(Locale.EnUS, tricia.getLocale());
+        assertEquals("SAVE", tricia.getProcessBehavior());
+        assertEquals(7200, tricia.getIdleSessionTTLInSeconds());
+        assertEquals("I am so sorry that I cant understand your requests right now. Maybe I can help you " +
+                "another time.", tricia.getAbortStatement().getMessages().get(0).getContent());
+        assertEquals("Can you please say that again?", tricia.getClarificationPrompt().getMessages().get(0).getContent());
+        ArrayList<Intent> intents = new ArrayList<Intent>(tricia.getIntents());
+        assertEquals("BuyBook", intents.get(0).getIntentName());
+        assertEquals("EndConversation", intents.get(1).getIntentName());
+        assertEquals("FirstTimeUser", intents.get(2).getIntentName());
+//        assertEquals("SellBook", intents.get(3).getIntentName());
+    }
+
+    private String retrieveChecksum() {
+        //Get the bot we want to update
+        GetBotRequest getBotRequest = new GetBotRequest().withName("Tricia").withVersionOrAlias("$LATEST");
+        GetBotResult getBotResult = lexModelBuildingClient.getBot(getBotRequest);
+        return getBotResult.getChecksum();
+    }
 
 }

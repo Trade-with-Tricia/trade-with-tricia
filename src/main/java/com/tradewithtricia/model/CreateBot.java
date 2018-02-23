@@ -76,7 +76,7 @@ public class CreateBot {
         this.idleSessionTTLInSeconds = 7200; // 2 hour conversation timeout
 
         this.abortStatement = new Statement().withMessages(new Message().withContentType(ContentType.PlainText)
-                .withContent("I am so sorry that I cant understand your requests right now. Maybe I can help you another time."));
+            .withContent("I am so sorry that I cant understand your requests right now. Maybe I can help you another time."));
 
         this.clarificationPrompt = new Prompt().withMaxAttempts(3).withMessages(new Message()
                 .withContentType(ContentType.PlainText)

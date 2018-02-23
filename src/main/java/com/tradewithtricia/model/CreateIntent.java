@@ -61,6 +61,61 @@ public class CreateIntent {
         PutIntentResult putIntentResult = this.lexModelBuildingClient.putIntent(putIntentRequest);
     }
 
+    public void createBuyIntent(boolean updateIntent) {
+        this.intentName = "BuyBook";
+
+        if (updateIntent) this.retrieveChecksum(this.intentName, "$LATEST");
+        else this.checksum = null;
+
+        this.conclusionStatement = null;
+
+        //Setup confirmation prompt
+        this.confirmationPrompt = new Prompt().withMaxAttempts(2)
+                .withMessages(new Message().withContentType(ContentType.PlainText)
+                    .withContent("Is this the correct ISBN number: {ISBN}"));
+        //Setup rejection message if the user says no to confirmation prompt
+        this.rejectionStatement = new Statement().withMessages(new Message().withContentType(ContentType.PlainText)
+                .withContent("Please re-enter the ISBN number in this format: \'ISBN: (ISBN # here)\'"));
+
+
+        this.description = "Intent to handle user wanting to buy a book from Tricia";
+
+        //Use this if we need to do any lambda initialization work
+//        CodeHook codeHook = new CodeHook();
+//        codeHook.setMessageVersion("1.0");
+//        codeHook.setUri(null);
+//        this.dialogCodeHook = codeHook;
+        this.dialogCodeHook = null;
+
+        //Setup followUpPrompt
+        Prompt followUpPrompt = new Prompt().withMaxAttempts(2).withMessages(new Message()
+                .withContentType(ContentType.PlainText)
+                    .withContent("Is there anything else I can help you with today?"));
+        Statement rejectionStatement = new Statement().withMessages(new Message()
+                .withContentType(ContentType.PlainText)
+                    .withContent("Okay, thanks for using Trade with Tricia. I hope I was able to help you with what you needed today."));
+        this.followUpPrompt = new FollowUpPrompt().withPrompt(followUpPrompt)
+                .withRejectionStatement(rejectionStatement);
+
+        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
+                .withCodeHook(new CodeHook().withMessageVersion("1.0")
+                    .withUri("arn:aws:lambda:us-east-1:140857943657:function:AddBookBuyerSprint3"));//example uri
+
+        this.parentIntentSignature = null;
+
+        //Set sampleUtterances
+        Collection<String> sampleUtterances = new ArrayList<String>();
+        sampleUtterances.add("Hey Tricia I would like to {Buy} a book");
+        sampleUtterances.add("Hey Tricia I would like to {Buy} a book with ISBN {ISBN}");
+        sampleUtterances.add("I would like to {Buy} a book with ISBN number {ISBN}");
+        sampleUtterances.add("I'm trying to {Buy} a book");
+        sampleUtterances.add("I'm looking for a book to {Buy}");
+        sampleUtterances.add("I'm {Buy} for a book");
+        this.sampleUtterances = sampleUtterances;
+
+        this.slots = this.getBuyIntentSlots();
+
+        this.putIntent();
     public void createSellerDeleteBookIntent(boolean updateIntent) {
         this.intentName = "SellerDeleteBook";
 
@@ -117,64 +172,6 @@ public class CreateIntent {
         this.putIntent();
     }
 
-    public void createBuyIntent(boolean updateIntent) {
-        this.intentName = "BuyBook";
-
-        if (updateIntent) this.retrieveChecksum(this.intentName, "$LATEST");
-        else this.checksum = null;
-
-        this.conclusionStatement = null;
-
-        //Setup confirmation prompt
-        this.confirmationPrompt = new Prompt().withMaxAttempts(2)
-                .withMessages(new Message().withContentType(ContentType.PlainText)
-                        .withContent("Is this the correct ISBN number: {ISBN}"));
-        //Setup rejection message if the user says no to confirmation prompt
-        this.rejectionStatement = new Statement().withMessages(new Message().withContentType(ContentType.PlainText)
-                .withContent("Please re-enter the ISBN number in this format: \'ISBN: (ISBN # here)\'"));
-
-
-        this.description = "Intent to handle user wanting to buy a book from Tricia";
-
-        //Use this if we need to do any lambda initialization work
-//        CodeHook codeHook = new CodeHook();
-//        codeHook.setMessageVersion("1.0");
-//        codeHook.setUri(null);
-//        this.dialogCodeHook = codeHook;
-        this.dialogCodeHook = null;
-
-        //Setup followUpPrompt
-        Prompt followUpPrompt = new Prompt().withMaxAttempts(2).withMessages(new Message()
-                .withContentType(ContentType.PlainText)
-                .withContent("Is there anything else I can help you with today?"));
-        Statement rejectionStatement = new Statement().withMessages(new Message()
-                .withContentType(ContentType.PlainText)
-                .withContent("Okay, thanks for using Trade with Tricia. I hope I was able to help you with what you needed today."));
-        this.followUpPrompt = new FollowUpPrompt().withPrompt(followUpPrompt)
-                .withRejectionStatement(rejectionStatement);
-
-        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
-                .withCodeHook(new CodeHook().withMessageVersion("1.0")
-                        .withUri("arn:aws:lambda:us-east-1:140857943657:function:AddBookBuyerSprint3"));//example uri
-
-        this.parentIntentSignature = null;
-
-        //Set sampleUtterances
-        Collection<String> sampleUtterances = new ArrayList<String>();
-        sampleUtterances.add("Hey Tricia I would like to {Buy} a book");
-        sampleUtterances.add("Hey Tricia I would like to {Buy} a book with ISBN {ISBN}");
-        sampleUtterances.add("I would like to {Buy} a book with ISBN number {ISBN}");
-        sampleUtterances.add("I'm trying to {Buy} a book");
-        sampleUtterances.add("I'm looking for a book to {Buy}");
-        sampleUtterances.add("I'm {Buy} for a book");
-        this.sampleUtterances = sampleUtterances;
-
-        this.slots = this.getBuyIntentSlots();
-
-        this.putIntent();
-    }
-
-
     public void createSellIntent(boolean updateIntent) {
         this.intentName = "SellBook";
 
@@ -214,7 +211,7 @@ public class CreateIntent {
         //TODO: attach lambda function to sell intent when complete
         this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
                 .withCodeHook(new CodeHook().withMessageVersion("1.0")
-                        .withUri("arn:aws:lambda:us-east-1:140857943657:function:AddBook-ToSell"));
+                    .withUri("arn:aws:lambda:us-east-1:140857943657:function:AddBook-ToSell"));
 
         this.parentIntentSignature = null;
 
@@ -270,10 +267,10 @@ public class CreateIntent {
 
         this.confirmationPrompt = new Prompt().withMaxAttempts(2)
                 .withMessages(new Message().withContentType(ContentType.PlainText)
-                        .withContent("Just to confirm, is {UserFirstName} {UserLastName} your name?"));
+                    .withContent("Just to confirm, is {UserFirstName} {UserLastName} your name?"));
         //Setup rejection message if the user says no to confirmation prompt
         this.rejectionStatement = new Statement().withMessages(new Message().withContentType(ContentType.PlainText)
-                .withContent("Please re-enter your name in this format \'My name is (first) (last)\'"));
+            .withContent("Please re-enter your name in this format \'My name is (first) (last)\'"));
 
         this.description = "Intent to handle a first time user of TWT";
 
@@ -282,8 +279,8 @@ public class CreateIntent {
         //Setup followUpPrompt
         this.followUpPrompt = new FollowUpPrompt().withPrompt(new Prompt().withMaxAttempts(2)
                 .withMessages(new Message().withContentType(ContentType.PlainText)
-                        .withContent("Thanks {UserFirstName}! What can I help you with today?")))
-                .withRejectionStatement(new Statement().withMessages(new Message()
+                    .withContent("Thanks {UserFirstName}! What can I help you with today?")))
+                    .withRejectionStatement(new Statement().withMessages(new Message()
                         .withContentType(ContentType.PlainText)
                         .withContent("Okay, thanks for using Trade with Tricia. I hope I was able to help you with what you needed today.")));
 
@@ -338,8 +335,8 @@ public class CreateIntent {
                 .withPriority(3).withSlotConstraint(SlotConstraint.Required)
                 .withSampleUtterances("The ISBN of my book is {ISBN}")
                 .withSlotType("AMAZON.NUMBER").withValueElicitationPrompt(new Prompt().withMaxAttempts(2)
-                        .withMessages(new Message().withContentType(ContentType.PlainText)
-                                .withContent("What is the ISBN number of the book you want to buy?")));
+                    .withMessages(new Message().withContentType(ContentType.PlainText)
+                        .withContent("What is the ISBN number of the book you want to buy?")));
 
         Slot buySlot = new Slot().withName("Buy").withDescription("Buy along with synonyms")
                 .withPriority(2).withSlotConstraint(SlotConstraint.Required)
@@ -379,17 +376,17 @@ public class CreateIntent {
                 .withPriority(2).withSlotConstraint(SlotConstraint.Required)
                 .withSlotType("AMAZON.US_FIRST_NAME")
                 .withValueElicitationPrompt(new Prompt().withMaxAttempts(2)
-                        .withMessages(new Message().withContentType(ContentType.PlainText)
-                                .withContent("Hi! I see that you are a first time user of Trade with Tricia. If you accept " +
-                                        "our T&C here at www.dummyurl.com, please respond with your full name in this format " +
-                                        "\'My name is (first) (last)\'. Otherwise, do not worry about replying.")));
+                    .withMessages(new Message().withContentType(ContentType.PlainText)
+                    .withContent("Hi! I see that you are a first time user of Trade with Tricia. If you accept " +
+                            "our T&C here at www.dummyurl.com, please respond with your full name in this format " +
+                            "\'My name is (first) (last)\'. Otherwise, do not worry about replying.")));
 
         Slot userLastName = new Slot().withName("UserLastName").withDescription("Last name of user")
                 .withPriority(3).withSlotConstraint(SlotConstraint.Required)
                 .withSlotType("AMAZON.US_LAST_NAME")
                 .withValueElicitationPrompt(new Prompt().withMaxAttempts(1)
                         .withMessages(new Message().withContentType(ContentType.PlainText)
-                                .withContent("Could you please re-enter your last name in the format \'Last name (last)\'?")));
+                        .withContent("Could you please re-enter your last name in the format \'Last name (last)\'?")));
 
 
         firstTimeUserSlots.add(userFirstName);
