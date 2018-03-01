@@ -75,8 +75,14 @@ public class CreateSlotType {
         this.description = "Slot type to recognize sell and synonyms of sell";
         Collection<String> sellSynonyms = new ArrayList<String>();
         sellSynonyms.add("unload");
+        
+        Collection<String> tradeSynonyms = new ArrayList<String>();
+        tradeSynonyms.add("exchange");
+        tradeSynonyms.add("barter");
+        
         Collection<EnumerationValue> enumerationValues = new ArrayList<EnumerationValue>();
         enumerationValues.add(new EnumerationValue().withValue("sell").withSynonyms(sellSynonyms));
+        enumerationValues.add(new EnumerationValue().withValue("trade").withSynonyms(tradeSynonyms));
         this.enumerationValues = enumerationValues;
         this.valueSelectionStrategy = "TOP_RESOLUTION";
         this.putSlotType();
