@@ -29,6 +29,7 @@ public class TradeWithTricia
         triciaSlots.setLexModelBuildingClient(lexModelBuildingClient);
         triciaSlots.createBuyTypeSlot(true);
         triciaSlots.createSellTypeSlot(true);
+        triciaSlots.createDeleteTypeSlot(true);
 
         //Create all intents
         CreateIntent triciaIntents = new CreateIntent();
@@ -37,6 +38,7 @@ public class TradeWithTricia
         triciaIntents.createEndConversationIntent(true);
         triciaIntents.createSellIntent(true);
         triciaIntents.createFirstTimeUserIntent(true);
+        triciaIntents.createSellerDeleteBookIntent(true);
 
         //Update our bot using the checksum retrieved
         CreateBot tricia = new CreateBot();
@@ -47,8 +49,8 @@ public class TradeWithTricia
         GetBotResult getBotResult = lexModelBuildingClient.getBot(getBotRequest);
 
         // Bot Publishing Process
-        PublishBot publishTricia = new PublishBot(getBotResult);
-        publishTricia.publishBot(lexModelBuildingClient);
+        //PublishBot publishTricia = new PublishBot(getBotResult);
+        //publishTricia.publishBot(lexModelBuildingClient);
 
 //        CreateBotAlias createBotAlias = new CreateBotAlias("Tricia", "dev", "$LATEST",
 //                null, "Alias for dev version of Tricia");
