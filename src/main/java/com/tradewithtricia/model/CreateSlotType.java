@@ -66,6 +66,23 @@ public class CreateSlotType {
         this.putSlotType();
     }
 
+    public void createDeleteTypeSlot(boolean updateSlotType) {
+        this.slotName = "delete";
+
+        if (updateSlotType) this.retrieveChecksum(this.slotName, "$LATEST");
+        else this.checksum = null;
+
+        this.description = "Slot type to recognize delete and synonyms of delete";
+        Collection<String> buySynonyms = new ArrayList<String>();
+        buySynonyms.add("remove");
+        buySynonyms.add("sold");
+        Collection<EnumerationValue> enumerationValues = new ArrayList<EnumerationValue>();
+        enumerationValues.add(new EnumerationValue().withValue("delete").withSynonyms(buySynonyms));
+        this.enumerationValues = enumerationValues;
+        this.valueSelectionStrategy = "TOP_RESOLUTION";
+        this.putSlotType();
+    }
+
     public void createSellTypeSlot(boolean updateSlotType) {
         this.slotName = "Sell";
 

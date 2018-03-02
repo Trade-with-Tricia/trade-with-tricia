@@ -203,6 +203,62 @@ public class CreateIntent {
         this.putIntent();
     }
 
+    public void createSellerDeleteBookIntent(boolean updateIntent) {
+        this.intentName = "SellerDeleteBook";
+
+        if (updateIntent) this.retrieveChecksum(this.intentName, "$LATEST");
+        else this.checksum = null;
+
+        this.conclusionStatement = null;
+
+        //Setup confirmation prompt
+        this.confirmationPrompt = new Prompt().withMaxAttempts(2)
+                .withMessages(new Message().withContentType(ContentType.PlainText)
+                        .withContent("Is this the correct ISBN number: {ISBN}"));
+        //Setup rejection message if the user says no to confirmation prompt
+        this.rejectionStatement = new Statement().withMessages(new Message().withContentType(ContentType.PlainText)
+                .withContent("Please re-enter the ISBN number in this format: \'ISBN: (ISBN # here)\'"));
+
+
+        this.description = "Intent to handle user wanting to delete book from Tricia's database";
+
+        //Use this if we need to do any lambda initialization work
+//        CodeHook codeHook = new CodeHook();
+//        codeHook.setMessageVersion("1.0");
+//        codeHook.setUri(null);
+//        this.dialogCodeHook = codeHook;
+        this.dialogCodeHook = null;
+
+        //Setup followUpPrompt
+        Prompt followUpPrompt = new Prompt().withMaxAttempts(2).withMessages(new Message()
+                .withContentType(ContentType.PlainText)
+                .withContent("Is there anything else I can help you with today?"));
+        Statement rejectionStatement = new Statement().withMessages(new Message()
+                .withContentType(ContentType.PlainText)
+                .withContent("Okay, thanks for using Trade with Tricia. I hope I was able to help you with what you needed today."));
+        this.followUpPrompt = new FollowUpPrompt().withPrompt(followUpPrompt)
+                .withRejectionStatement(rejectionStatement);
+
+
+        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
+                .withCodeHook(new CodeHook().withMessageVersion("1.0")
+                        .withUri("arn:aws:lambda:us-east-1:140857943657:function:DeleteBookFromDB-Sell_Intent"));//example uri
+
+        this.parentIntentSignature = null;
+
+        //Set sampleUtterances
+        Collection<String> sampleUtterances = new ArrayList<String>();
+        sampleUtterances.add("Hey Tricia I would like to {Delete} a book");
+        sampleUtterances.add("Hey Tricia I would like to {Delete} a book with ISBN {ISBN}");
+        sampleUtterances.add("I would like to {Delete} a book with ISBN number {ISBN}");
+        sampleUtterances.add("I'm trying to {Delete} a book");
+        this.sampleUtterances = sampleUtterances;
+
+        this.slots = this.getDeleteIntentSlots();
+
+        this.putIntent();
+    }
+
     public void createFirstTimeUserIntent(boolean updateIntent) {
         this.intentName = "FirstTimeUser";
 
@@ -292,6 +348,27 @@ public class CreateIntent {
         sellIntentSlots.add(ISBN);
         sellIntentSlots.add(sellSlot);
         return sellIntentSlots;
+    }
+
+    private Collection<Slot> getDeleteIntentSlots() {
+        Collection<Slot> deleteIntentSlots = new ArrayList<Slot>();
+        Slot ISBN = new Slot().withName("ISBN").withDescription("ISBN of a book")
+                .withPriority(3).withSlotConstraint(SlotConstraint.Required)
+                .withSampleUtterances("The ISBN of my book is {ISBN}")
+                .withSlotType("AMAZON.NUMBER").withValueElicitationPrompt(new Prompt().withMaxAttempts(2)
+                        .withMessages(new Message().withContentType(ContentType.PlainText)
+                                .withContent("What is the ISBN number of the book you want to buy?")));
+
+        Slot deleteSlot = new Slot().withName("Delete").withDescription("Delete along with synonyms")
+                .withPriority(2).withSlotConstraint(SlotConstraint.Required)
+                .withSlotType("delete").withSlotTypeVersion("$LATEST")
+                .withValueElicitationPrompt(new Prompt().withMaxAttempts(1)
+                        .withMessages(new Message().withContentType(ContentType.PlainText)
+                                .withContent("What would you like to do today?")));
+
+        deleteIntentSlots.add(ISBN);
+        deleteIntentSlots.add(deleteSlot);
+        return deleteIntentSlots;
     }
 
     private Collection<Slot> getFirstTimeUserSlots() {
