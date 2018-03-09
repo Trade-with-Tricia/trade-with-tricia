@@ -35,9 +35,10 @@ public class CreateBotTest {
         assertEquals("Can you please say that again?", tricia.getClarificationPrompt().getMessages().get(0).getContent());
         ArrayList<Intent> intents = new ArrayList<Intent>(tricia.getIntents());
         assertEquals("BuyBook", intents.get(0).getIntentName());
-        assertEquals("EndConversation", intents.get(1).getIntentName());
-        assertEquals("FirstTimeUser", intents.get(2).getIntentName());
-//        assertEquals("SellBook", intents.get(3).getIntentName());
+        assertEquals("SellBook", intents.get(1).getIntentName());
+        assertEquals("EndConversation", intents.get(2).getIntentName());
+        assertEquals("FirstTimeUser", intents.get(3).getIntentName());
+
     }
 
     private String retrieveChecksum() {

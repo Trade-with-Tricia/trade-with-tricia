@@ -1,5 +1,9 @@
 package com.tradewithtricia.model;
 
+/*
+    This class is responsible for making the putIntent API calls after building each intent
+ */
+
 import com.amazonaws.services.lexmodelbuilding.AmazonLexModelBuilding;
 import com.amazonaws.services.lexmodelbuilding.model.*;
 

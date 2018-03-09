@@ -1,5 +1,9 @@
 package com.tradewithtricia.model;
 
+/*
+    This class is responsible for making the putSlotType API calls after building each slot type
+ */
+
 import com.amazonaws.services.lexmodelbuilding.AmazonLexModelBuilding;
 import com.amazonaws.services.lexmodelbuilding.model.*;
 

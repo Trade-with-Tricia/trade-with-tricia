@@ -1,5 +1,10 @@
 package com.tradewithtricia.model;
 
+/*
+    This class is responsible for making the putBot API call to create/update Tricia once
+    all the intents/slots are created
+ */
+
 import com.amazonaws.services.lexmodelbuilding.AmazonLexModelBuilding;
 import com.amazonaws.services.lexmodelbuilding.model.*;
 
@@ -96,8 +101,6 @@ public class CreateBot {
 
     /*
     *   Get all intents associated with Tricia. If you create a new intent, need to get it here.
-    *
-    *
     */
     private Collection<Intent> getAllTriciaIntents() {
         Collection<Intent> triciaIntents = new ArrayList<Intent>();

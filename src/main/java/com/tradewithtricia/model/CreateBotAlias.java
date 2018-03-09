@@ -1,5 +1,11 @@
 package com.tradewithtricia.model;
 
+/*
+    This class is responsible for making a new alias for our chatbot. Aliases are tied to specific
+    versions of our bot so we can be more flexible with versioning read here for more:
+    https://docs.aws.amazon.com/lex/latest/dg/versioning-aliases.html
+ */
+
 import com.amazonaws.services.lexmodelbuilding.AmazonLexModelBuilding;
 import com.amazonaws.services.lexmodelbuilding.model.PutBotAliasRequest;
 import com.amazonaws.services.lexmodelbuilding.model.PutBotAliasResult;
