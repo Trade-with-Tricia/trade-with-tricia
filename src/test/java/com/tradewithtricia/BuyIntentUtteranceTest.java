@@ -32,6 +32,11 @@ public class BuyIntentUtteranceTest {
         assertEquals(DialogState.ElicitSlot.toString(), textResult.getDialogState());
         assertEquals("ISBN", textResult.getSlotToElicit());
         assertEquals("What is the ISBN number of the book you want to buy?", textResult.getMessage());
+
+        textRequest.setInputText("1234567890");
+        textResult = lexRuntimeClient.postText(textRequest);
+        assertEquals(DialogState.ConfirmIntent.toString(), textResult.getDialogState());
+        assertEquals("Is this the correct ISBN number: 1234567890", textResult.getMessage());
     }
 
     @Test

@@ -80,13 +80,50 @@ public class CreateSlotType {
         Collection<String> sellSynonyms = new ArrayList<String>();
         sellSynonyms.add("unload");
         
+        Collection<EnumerationValue> enumerationValues = new ArrayList<EnumerationValue>();
+        enumerationValues.add(new EnumerationValue().withValue("sell").withSynonyms(sellSynonyms));
+        this.enumerationValues = enumerationValues;
+        this.valueSelectionStrategy = "TOP_RESOLUTION";
+        this.putSlotType();
+    }
+
+    public void createTradeTypeSlot(boolean updateSlotType) {
+        this.slotName = "Trade";
+
+        if (updateSlotType) this.retrieveChecksum(this.slotName, "$LATEST");
+        else this.checksum = null;
+
+        this.description = "Slot type to recognize trade and synonyms of trade";
+
         Collection<String> tradeSynonyms = new ArrayList<String>();
         tradeSynonyms.add("exchange");
         tradeSynonyms.add("barter");
-        
+
         Collection<EnumerationValue> enumerationValues = new ArrayList<EnumerationValue>();
-        enumerationValues.add(new EnumerationValue().withValue("sell").withSynonyms(sellSynonyms));
         enumerationValues.add(new EnumerationValue().withValue("trade").withSynonyms(tradeSynonyms));
+        this.enumerationValues = enumerationValues;
+        this.valueSelectionStrategy = "TOP_RESOLUTION";
+        this.putSlotType();
+    }
+
+    public void createTradePurposeTypeSlot(boolean updateSlotType) {
+        this.slotName = "TradePurpose";
+
+        if (updateSlotType) this.retrieveChecksum(this.slotName, "$LATEST");
+        else this.checksum = null;
+
+        this.description = "Slot type to recognize the trade purpose and synonyms of that trade purpose";
+
+        Collection<String> haveSynonyms = new ArrayList<String>();
+        haveSynonyms.add("own");
+        haveSynonyms.add("possess");
+
+        Collection<String> needSynonyms = new ArrayList<String>();
+        needSynonyms.add("require");
+
+        Collection<EnumerationValue> enumerationValues = new ArrayList<EnumerationValue>();
+        enumerationValues.add(new EnumerationValue().withValue("have").withSynonyms(haveSynonyms));
+        enumerationValues.add(new EnumerationValue().withValue("need").withSynonyms(needSynonyms));
         this.enumerationValues = enumerationValues;
         this.valueSelectionStrategy = "TOP_RESOLUTION";
         this.putSlotType();

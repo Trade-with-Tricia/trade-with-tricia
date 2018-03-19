@@ -158,7 +158,6 @@ public class CreateIntent {
         this.followUpPrompt = new FollowUpPrompt().withPrompt(followUpPrompt)
                 .withRejectionStatement(rejectionStatement);
 
-        //TODO: attach lambda function to sell intent when complete
         this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
                 .withCodeHook(new CodeHook().withMessageVersion("1.0")
                     .withUri("arn:aws:lambda:us-east-1:140857943657:function:AddBook-ToSell"));
@@ -178,6 +177,63 @@ public class CreateIntent {
 
         this.putIntent();
     }
+
+    public void createTradeIntent(boolean updateIntent) {
+        this.intentName = "TradeBook";
+
+        if (updateIntent) this.retrieveChecksum(this.intentName, "$LATEST");
+        else this.checksum = null;
+
+        this.conclusionStatement = null;
+
+        //Setup confirmation prompt
+        this.confirmationPrompt = null;
+        //Setup rejection message if the user says no to confirmation prompt
+        this.rejectionStatement = null;
+
+
+        this.description = "Intent to handle user wanting to trade books with Tricia";
+
+        //Use this if we need to do any lambda initialization work
+//        CodeHook codeHook = new CodeHook();
+//        codeHook.setMessageVersion("1.0");
+//        codeHook.setUri(null);
+//        this.dialogCodeHook = codeHook;
+        this.dialogCodeHook = null;
+
+        //Setup followUpPrompt
+        Prompt followUpPrompt = new Prompt().withMaxAttempts(2).withMessages(new Message()
+                .withContentType(ContentType.PlainText)
+                .withContent("Is there anything else I can help you with today?"));
+        Statement rejectionStatement = new Statement().withMessages(new Message()
+                .withContentType(ContentType.PlainText)
+                .withContent("Okay, thanks for using Trade with Tricia. I hope I was able to help you with what you needed today."));
+        this.followUpPrompt = new FollowUpPrompt().withPrompt(followUpPrompt)
+                .withRejectionStatement(rejectionStatement);
+
+//        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
+//                .withCodeHook(new CodeHook().withMessageVersion("1.0")
+//                        .withUri("arn:aws:lambda:us-east-1:140857943657:function:AddBook-ToSell"));
+        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.ReturnIntent);
+
+        this.parentIntentSignature = null;
+
+        //Set sampleUtterances
+        Collection<String> sampleUtterances = new ArrayList<String>();
+        sampleUtterances.add("Hey Tricia I would like to {Trade} a book");
+        sampleUtterances.add("Hey Tricia I want to {Trade} a book");
+        sampleUtterances.add("I {TradePurpose} a book that I want to {Trade}");
+        sampleUtterances.add("I want to {Trade} for a book that I {TradePurpose}");
+        sampleUtterances.add("I want to {Trade} a book with ISBN {OwnedISBN}");
+        sampleUtterances.add("I {TradePurpose} a book with ISBN {OwnedISBN} that I want to {Trade}");
+        sampleUtterances.add("I {TradePurpose} a book with ISBN {OwnedISBN} that I want to {Trade} for");
+        this.sampleUtterances = sampleUtterances;
+
+        this.slots = this.getTradeIntentSlots();
+
+        this.putIntent();
+    }
+
 
     public void createEndConversationIntent(boolean updateIntent) {
         this.intentName = "EndConversation";
@@ -296,6 +352,39 @@ public class CreateIntent {
         sellIntentSlots.add(ISBN);
         sellIntentSlots.add(sellSlot);
         return sellIntentSlots;
+    }
+
+    private Collection<Slot> getTradeIntentSlots() {
+        Collection<Slot> tradeIntentSlots = new ArrayList<Slot>();
+        Slot tradeSlot = new Slot().withName("Trade").withDescription("Trade along with synonyms")
+                .withPriority(1).withSlotConstraint(SlotConstraint.Required)
+                .withSlotType("Trade").withSlotTypeVersion("$LATEST")
+                .withValueElicitationPrompt(new Prompt().withMaxAttempts(1).withMessages(new Message().withContentType(ContentType.PlainText)
+                        .withContent("What would you like to do today?")));
+        Slot tradePurposeSlot = new Slot().withName("TradePurpose").withDescription("Does the user have or need the book they want to trade?")
+                .withPriority(2).withSlotConstraint(SlotConstraint.Required)
+                .withSlotType("TradePurpose").withSlotTypeVersion("$LATEST")
+                .withValueElicitationPrompt(new Prompt().withMaxAttempts(1).withMessages(new Message().withContentType(ContentType.PlainText)
+                        .withContent("Would this be a book you have or a book that you need?")));
+        Slot OwnedISBN = new Slot().withName("OwnedISBN").withDescription("ISBN of a book that the user owns")
+                .withPriority(3).withSlotConstraint(SlotConstraint.Required)
+                .withSampleUtterances("The ISBN of my book is {OwnedISBN}")
+                .withSlotType("AMAZON.NUMBER").withValueElicitationPrompt(new Prompt().withMaxAttempts(2)
+                        .withMessages(new Message().withContentType(ContentType.PlainText)
+                                .withContent("What is the ISBN number of the book you have?")));
+        Slot DesiredISBN = new Slot().withName("DesiredISBN").withDescription("ISBN of a book that the user needs")
+                .withPriority(4).withSlotConstraint(SlotConstraint.Required)
+                .withSampleUtterances("The ISBN of the book I need is {ISBN}")
+                .withSlotType("AMAZON.NUMBER").withValueElicitationPrompt(new Prompt().withMaxAttempts(2)
+                        .withMessages(new Message().withContentType(ContentType.PlainText)
+                                .withContent("What is the ISBN number of the book you need?")));
+
+
+        tradeIntentSlots.add(DesiredISBN);
+        tradeIntentSlots.add(OwnedISBN);
+        tradeIntentSlots.add(tradeSlot);
+        tradeIntentSlots.add(tradePurposeSlot);
+        return tradeIntentSlots;
     }
 
     private Collection<Slot> getFirstTimeUserSlots() {
@@ -426,5 +515,4 @@ public class CreateIntent {
     public void setLexModelBuildingClient(AmazonLexModelBuilding lexModelBuildingClient) {
         this.lexModelBuildingClient = lexModelBuildingClient;
     }
-
 }

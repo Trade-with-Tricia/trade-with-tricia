@@ -30,6 +30,8 @@ public class TradeWithTricia
         triciaSlots.setLexModelBuildingClient(lexModelBuildingClient);
         triciaSlots.createBuyTypeSlot(true);
         triciaSlots.createSellTypeSlot(true);
+        triciaSlots.createTradeTypeSlot(true);
+        triciaSlots.createTradePurposeTypeSlot(true);
 
         //Create all intents
         CreateIntent triciaIntents = new CreateIntent();
@@ -38,6 +40,7 @@ public class TradeWithTricia
         triciaIntents.createEndConversationIntent(true);
         triciaIntents.createSellIntent(true);
         triciaIntents.createFirstTimeUserIntent(true);
+        triciaIntents.createTradeIntent(true);
 
         //Update our bot using the checksum retrieved
         CreateBot tricia = new CreateBot();

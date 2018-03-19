@@ -106,14 +106,19 @@ public class CreateBot {
         Collection<Intent> triciaIntents = new ArrayList<Intent>();
 
         GetIntentRequest getBuyIntentRequest = new GetIntentRequest().withName("BuyBook").withVersion("$LATEST");
-        GetIntentResult getButIntentResult = this.lexModelBuildingClient.getIntent(getBuyIntentRequest);
-        triciaIntents.add(new Intent().withIntentName(getButIntentResult.getName())
-                .withIntentVersion(getButIntentResult.getVersion()));
+        GetIntentResult getBuyIntentResult = this.lexModelBuildingClient.getIntent(getBuyIntentRequest);
+        triciaIntents.add(new Intent().withIntentName(getBuyIntentResult.getName())
+                .withIntentVersion(getBuyIntentResult.getVersion()));
 
         GetIntentRequest getSellIntentRequest = new GetIntentRequest().withName("SellBook").withVersion("$LATEST");
         GetIntentResult getSellIntentResult = this.lexModelBuildingClient.getIntent(getSellIntentRequest);
         triciaIntents.add(new Intent().withIntentName(getSellIntentResult.getName())
-                .withIntentVersion(getButIntentResult.getVersion()));
+                .withIntentVersion(getSellIntentResult.getVersion()));
+
+        GetIntentRequest getTradeIntentRequest = new GetIntentRequest().withName("TradeBook").withVersion("$LATEST");
+        GetIntentResult getTradeIntentResult = this.lexModelBuildingClient.getIntent(getTradeIntentRequest);
+        triciaIntents.add(new Intent().withIntentName(getTradeIntentResult.getName())
+                .withIntentVersion(getTradeIntentResult.getVersion()));
 
         GetIntentRequest getEndConversationIntentRequest = new GetIntentRequest().withName("EndConversation")
                 .withVersion("$LATEST");
