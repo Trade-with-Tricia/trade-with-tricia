@@ -6,6 +6,7 @@ import com.twilio.type.PhoneNumber;
 
 public class App {
     // Find your Account Sid and Token at twilio.com/user/account
+    //TESTING BY AVAYA- IGNORE THIS COMMENT
     public static final String ACCOUNT_SID = "AC8e82966026ad06984e2438fd3257730c";
     public static final String AUTH_TOKEN = "c0ef4708432641607a7d95e74bede0e4";
     public static final String AVAYA = "+12088632997";
