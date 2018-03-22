@@ -235,7 +235,11 @@ public class CreateIntent {
                         .withContent("Okay, thanks for using Trade with Tricia. I hope I was able to help you with what you needed today.")));
 
         //TODO: Need Lambda function to store user's name in db
-        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.ReturnIntent);
+        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
+                .withCodeHook(new CodeHook().withMessageVersion("1.0")
+                    .withUri("arn:aws:lambda:us-east-1:140857943657:function:SaveUsersName"));//example uri
+        
+        //this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.ReturnIntent);
 
         this.parentIntentSignature = null;
 
