@@ -1,10 +1,5 @@
 package com.tradewithtricia;
 
-/*
-    Trade with Tricia main class, entry point of program. To build bot, just run main method (assuming you
-    have correct credentials setup)
- */
-
 import com.amazonaws.services.lexmodelbuilding.AmazonLexModelBuilding;
 import com.amazonaws.services.lexmodelbuilding.AmazonLexModelBuildingClientBuilder;
 import com.amazonaws.services.lexmodelbuilding.model.*;
@@ -18,6 +13,10 @@ import java.util.Scanner;
 
 import static org.apache.http.util.TextUtils.isEmpty;
 
+/**
+ * Hello world!
+ *
+ */
 public class TradeWithTricia
 {
     public static void main(String[] args)
@@ -31,6 +30,7 @@ public class TradeWithTricia
         triciaSlots.createBuyTypeSlot(true);
         triciaSlots.createSellTypeSlot(true);
 
+
         //Create all intents
         CreateIntent triciaIntents = new CreateIntent();
         triciaIntents.setLexModelBuildingClient(lexModelBuildingClient);
@@ -38,6 +38,8 @@ public class TradeWithTricia
         triciaIntents.createEndConversationIntent(true);
         triciaIntents.createSellIntent(true);
         triciaIntents.createFirstTimeUserIntent(true);
+        triciaIntents.createConfirmationToBuyerIntent(true);
+
 
         //Update our bot using the checksum retrieved
         CreateBot tricia = new CreateBot();
@@ -47,8 +49,10 @@ public class TradeWithTricia
         GetBotRequest getBotRequest = new GetBotRequest().withName("Tricia").withVersionOrAlias("$LATEST");
         GetBotResult getBotResult = lexModelBuildingClient.getBot(getBotRequest);
 
+        // Bot Publishing Process
+        PublishBot publishTricia = new PublishBot(getBotResult);
+        publishTricia.publishBot(lexModelBuildingClient);
 
-        //Follow this process to create a new alias
 //        CreateBotAlias createBotAlias = new CreateBotAlias("Tricia", "dev", "$LATEST",
 //                null, "Alias for dev version of Tricia");
 //        createBotAlias.putBotAlias(lexModelBuildingClient);
