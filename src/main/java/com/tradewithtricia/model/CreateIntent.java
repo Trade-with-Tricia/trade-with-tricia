@@ -262,10 +262,10 @@ public class CreateIntent {
         //Setup confirmation prompt
         this.confirmationPrompt = new Prompt().withMaxAttempts(2)
                 .withMessages(new Message().withContentType(ContentType.PlainText)
-                        .withContent("Great! Just to confirm, you bought {ISBN} from {userPhoneNumber}?"));
+                        .withContent("Great! Just to confirm, you got the book {ISBN} from {userPhoneNumber}?"));
         //Setup rejection message if the user says no to confirmation prompt
         this.rejectionStatement = new Statement().withMessages(new Message().withContentType(ContentType.PlainText)
-                .withContent("Please re-enter the ISBN of the book you bought and the phone number. Ex. 1234 5034448774"));
+                .withContent("Please re-enter the phone number of the person you recieved your book from. Example: \'5034448774\'"));
 
         this.description = "Intent to retrieve the phone number and ISBN of a book the buyer bought, updates DB";
 
@@ -373,7 +373,7 @@ public class CreateIntent {
                 .withSampleUtterances("I bought the book from {buyerPhoneNumber}")
                 .withSlotType("AMAZON.NUMBER").withValueElicitationPrompt(new Prompt().withMaxAttempts(2)
                         .withMessages(new Message().withContentType(ContentType.PlainText)
-                                .withContent("What is the phone number of the person you bought the book from?")));
+                                .withContent("What is the phone number of the person you got the book from?")));
 
         confirmationTextSlots.add(buyerPhoneNumber);
         return confirmationTextSlots;
