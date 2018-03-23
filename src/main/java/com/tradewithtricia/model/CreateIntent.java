@@ -1,9 +1,5 @@
 package com.tradewithtricia.model;
 
-/*
-    This class is responsible for making the putIntent API calls after building each intent
- */
-
 import com.amazonaws.services.lexmodelbuilding.AmazonLexModelBuilding;
 import com.amazonaws.services.lexmodelbuilding.model.*;
 
@@ -46,7 +42,8 @@ public class CreateIntent {
         this.lexModelBuildingClient = lexModelBuildingClient;
     }
 
-    public CreateIntent() {}
+    public CreateIntent() {
+    }
 
     public void putIntent() {
         PutIntentRequest putIntentRequest = new PutIntentRequest();
@@ -76,7 +73,7 @@ public class CreateIntent {
         //Setup confirmation prompt
         this.confirmationPrompt = new Prompt().withMaxAttempts(2)
                 .withMessages(new Message().withContentType(ContentType.PlainText)
-                    .withContent("Is this the correct ISBN number: {ISBN}"));
+                        .withContent("Is this the correct ISBN number: {ISBN}"));
         //Setup rejection message if the user says no to confirmation prompt
         this.rejectionStatement = new Statement().withMessages(new Message().withContentType(ContentType.PlainText)
                 .withContent("Please re-enter the ISBN number in this format: \'ISBN: (ISBN # here)\'"));
@@ -94,16 +91,16 @@ public class CreateIntent {
         //Setup followUpPrompt
         Prompt followUpPrompt = new Prompt().withMaxAttempts(2).withMessages(new Message()
                 .withContentType(ContentType.PlainText)
-                    .withContent("Is there anything else I can help you with today?"));
+                .withContent("Is there anything else I can help you with today?"));
         Statement rejectionStatement = new Statement().withMessages(new Message()
                 .withContentType(ContentType.PlainText)
-                    .withContent("Okay, thanks for using Trade with Tricia. I hope I was able to help you with what you needed today."));
+                .withContent("Okay, thanks for using Trade with Tricia. I hope I was able to help you with what you needed today."));
         this.followUpPrompt = new FollowUpPrompt().withPrompt(followUpPrompt)
                 .withRejectionStatement(rejectionStatement);
 
         this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
                 .withCodeHook(new CodeHook().withMessageVersion("1.0")
-                    .withUri("arn:aws:lambda:us-east-1:140857943657:function:AddBookBuyerSprint3"));//example uri
+                        .withUri("arn:aws:lambda:us-east-1:140857943657:function:AddBookBuyerSprint3"));//example uri
 
         this.parentIntentSignature = null;
 
@@ -161,7 +158,7 @@ public class CreateIntent {
         //TODO: attach lambda function to sell intent when complete
         this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
                 .withCodeHook(new CodeHook().withMessageVersion("1.0")
-                    .withUri("arn:aws:lambda:us-east-1:140857943657:function:AddBook-ToSell"));
+                        .withUri("arn:aws:lambda:us-east-1:140857943657:function:AddBook-ToSell"));
 
         this.parentIntentSignature = null;
 
@@ -185,11 +182,14 @@ public class CreateIntent {
         if (updateIntent) this.retrieveChecksum(this.intentName, "$LATEST");
         else this.checksum = null;
 
-        this.conclusionStatement = null;
+        this.conclusionStatement = new Statement().withMessages(new Message().withContentType(ContentType.PlainText)
+                .withContent("Goodbye!"));
+
         this.confirmationPrompt = null;
         this.description = "Intent to handle a user wanting to end the conversation";
         this.dialogCodeHook = null;
-        this.followUpPrompt = null;
+
+        Prompt followUpPrompt = null;
         this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.ReturnIntent);
         this.parentIntentSignature = null;
         this.rejectionStatement = null;
@@ -202,6 +202,8 @@ public class CreateIntent {
         sampleUtterances.add("I don't need anything");
         sampleUtterances.add("Bye Tricia");
         sampleUtterances.add("Bye");
+        sampleUtterances.add("Nevermind");
+        sampleUtterances.add("Never mind");
         this.sampleUtterances = sampleUtterances;
 
         this.putIntent();
@@ -217,10 +219,10 @@ public class CreateIntent {
 
         this.confirmationPrompt = new Prompt().withMaxAttempts(2)
                 .withMessages(new Message().withContentType(ContentType.PlainText)
-                    .withContent("Just to confirm, is {UserFirstName} {UserLastName} your name?"));
+                        .withContent("Just to confirm, is {UserFirstName} {UserLastName} your name?"));
         //Setup rejection message if the user says no to confirmation prompt
         this.rejectionStatement = new Statement().withMessages(new Message().withContentType(ContentType.PlainText)
-            .withContent("Please re-enter your name in this format \'My name is (first) (last)\'"));
+                .withContent("Please re-enter your name in this format \'My name is (first) (last)\'"));
 
         this.description = "Intent to handle a first time user of TWT";
 
@@ -229,17 +231,13 @@ public class CreateIntent {
         //Setup followUpPrompt
         this.followUpPrompt = new FollowUpPrompt().withPrompt(new Prompt().withMaxAttempts(2)
                 .withMessages(new Message().withContentType(ContentType.PlainText)
-                    .withContent("Thanks {UserFirstName}! What can I help you with today?")))
-                    .withRejectionStatement(new Statement().withMessages(new Message()
+                        .withContent("Thanks {UserFirstName}! What can I help you with today?")))
+                .withRejectionStatement(new Statement().withMessages(new Message()
                         .withContentType(ContentType.PlainText)
                         .withContent("Okay, thanks for using Trade with Tricia. I hope I was able to help you with what you needed today.")));
 
         //TODO: Need Lambda function to store user's name in db
-        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
-                .withCodeHook(new CodeHook().withMessageVersion("1.0")
-                    .withUri("arn:aws:lambda:us-east-1:140857943657:function:SaveUsersName"));//example uri
-        
-        //this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.ReturnIntent);
+        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.ReturnIntent);
 
         this.parentIntentSignature = null;
 
@@ -254,6 +252,46 @@ public class CreateIntent {
 
     }
 
+    public void createConfirmationToBuyerIntent(boolean updateIntent) {
+        this.intentName = "ConfirmationToBuyer";
+        if (updateIntent) {this.retrieveChecksum(this.intentName, "$LATEST");}
+        else this.checksum =null;
+
+        this.conclusionStatement =null;
+
+        //Setup confirmation prompt
+        this.confirmationPrompt = new Prompt().withMaxAttempts(2)
+                .withMessages(new Message().withContentType(ContentType.PlainText)
+                        .withContent("Great! Just to confirm, you bought {ISBN} from {userPhoneNumber}?"));
+        //Setup rejection message if the user says no to confirmation prompt
+        this.rejectionStatement = new Statement().withMessages(new Message().withContentType(ContentType.PlainText)
+                .withContent("Please re-enter the ISBN of the book you bought and the phone number. Ex. 1234 5034448774"));
+
+        this.description = "Intent to retrieve the phone number and ISBN of a book the buyer bought, updates DB";
+
+        this.dialogCodeHook = null;
+
+        //Setup followUpPrompt
+        Prompt followUpPrompt = new Prompt().withMaxAttempts(2).withMessages(new Message()
+                .withContentType(ContentType.PlainText)
+                .withContent("Thank you! Let me know if there is anything I can help you with while I'm here!"));
+
+        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
+                .withCodeHook(new CodeHook().withMessageVersion("1.0")
+                        .withUri("arn:aws:lambda:us-east-1:140857943657:function:DeleteBookFromDB"));
+
+        this.parentIntentSignature = null;
+
+        Collection<String> sampleUtterances = new ArrayList<String>();
+        sampleUtterances.add("#TRIGGER CONFRIMATIONTOBUYER INTENT# {ISBN}");
+
+        this.sampleUtterances = sampleUtterances;
+
+        this.slots = this.getConfirmationTextSlots();
+
+        this.putIntent();
+
+    }
 
     private void retrieveChecksum(String intentName, String version) {
         GetIntentRequest getIntentRequest = new GetIntentRequest().withName(intentName)
@@ -295,7 +333,7 @@ public class CreateIntent {
                 .withPriority(2).withSlotConstraint(SlotConstraint.Required)
                 .withSlotType("Sell").withSlotTypeVersion("$LATEST")
                 .withValueElicitationPrompt(new Prompt().withMaxAttempts(1).withMessages(new Message().withContentType(ContentType.PlainText)
-                        .withContent("What would you like to do today?")));;
+                        .withContent("What would you like to do today?")));
 
         sellIntentSlots.add(ISBN);
         sellIntentSlots.add(sellSlot);
@@ -325,6 +363,20 @@ public class CreateIntent {
         firstTimeUserSlots.add(userFirstName);
         firstTimeUserSlots.add(userLastName);
         return firstTimeUserSlots;
+    }
+
+
+    private Collection<Slot> getConfirmationTextSlots() {
+        Collection<Slot> confirmationTextSlots = new ArrayList<Slot>();
+        Slot buyerPhoneNumber = new Slot().withName("PhoneNumber").withDescription("Phone Number of Seller")
+                .withPriority(2).withSlotConstraint(SlotConstraint.Required)
+                .withSampleUtterances("I bought the book from {buyerPhoneNumber}")
+                .withSlotType("AMAZON.NUMBER").withValueElicitationPrompt(new Prompt().withMaxAttempts(2)
+                        .withMessages(new Message().withContentType(ContentType.PlainText)
+                                .withContent("What is the phone number of the person you bought the book from?")));
+
+        confirmationTextSlots.add(buyerPhoneNumber);
+        return confirmationTextSlots;
     }
 
     public String getIntentName() {
