@@ -239,10 +239,11 @@ public class CreateIntent {
         this.followUpPrompt = new FollowUpPrompt().withPrompt(followUpPrompt)
                 .withRejectionStatement(rejectionStatement);
 
+        //this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.ReturnIntent);
 
         this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
                 .withCodeHook(new CodeHook().withMessageVersion("1.0")
-                        .withUri("arn:aws:lambda:us-east-1:140857943657:function:DeleteBookFromDB-Sell_Intent"));//example uri
+                        .withUri("arn:aws:lambda:us-east-1:140857943657:function:DeleteBookFromDB"));//example uri
 
         this.parentIntentSignature = null;
 
@@ -252,6 +253,10 @@ public class CreateIntent {
         sampleUtterances.add("Hey Tricia I would like to {Delete} a book with ISBN {ISBN}");
         sampleUtterances.add("I would like to {Delete} a book with ISBN number {ISBN}");
         sampleUtterances.add("I'm trying to {Delete} a book");
+        sampleUtterances.add("I want to {Delete} my book");
+        sampleUtterances.add("Can you {Delete} my book from the database");
+        sampleUtterances.add("Can you {Delete} my book");
+
         this.sampleUtterances = sampleUtterances;
 
         this.slots = this.getDeleteIntentSlots();
@@ -357,7 +362,7 @@ public class CreateIntent {
                 .withSampleUtterances("The ISBN of my book is {ISBN}")
                 .withSlotType("AMAZON.NUMBER").withValueElicitationPrompt(new Prompt().withMaxAttempts(2)
                         .withMessages(new Message().withContentType(ContentType.PlainText)
-                                .withContent("What is the ISBN number of the book you want to buy?")));
+                                .withContent("What is the ISBN number of the book you want to remove?")));
 
         Slot deleteSlot = new Slot().withName("Delete").withDescription("Delete along with synonyms")
                 .withPriority(2).withSlotConstraint(SlotConstraint.Required)

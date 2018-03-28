@@ -48,9 +48,9 @@ public class TradeWithTricia
         GetBotRequest getBotRequest = new GetBotRequest().withName("Tricia").withVersionOrAlias("$LATEST");
         GetBotResult getBotResult = lexModelBuildingClient.getBot(getBotRequest);
 
-        // Bot Publishing Process
-        //PublishBot publishTricia = new PublishBot(getBotResult);
-        //publishTricia.publishBot(lexModelBuildingClient);
+//        //Bot Publishing Process
+//        PublishBot publishTricia = new PublishBot(getBotResult);
+//        publishTricia.publishBot(lexModelBuildingClient);
 
 //        CreateBotAlias createBotAlias = new CreateBotAlias("Tricia", "dev", "$LATEST",
 //                null, "Alias for dev version of Tricia");
