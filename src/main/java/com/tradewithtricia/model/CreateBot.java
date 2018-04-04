@@ -85,7 +85,7 @@ public class CreateBot {
 
         this.clarificationPrompt = new Prompt().withMaxAttempts(3).withMessages(new Message()
                 .withContentType(ContentType.PlainText)
-                .withContent("What can I help you with? If you’re not sure how to use Trade with Tricia, just send me HELP"));
+                .withContent("What can I help you with? If you’re not sure how to use Trade with Tricia, just send me \"HELP\""));
 
         this.intents = getAllTriciaIntents();
 
