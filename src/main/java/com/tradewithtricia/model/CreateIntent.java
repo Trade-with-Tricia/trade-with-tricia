@@ -253,6 +253,49 @@ public class CreateIntent {
         this.putIntent();
 
     }
+    public void createHelpIntent(boolean updateIntent) {
+        this.intentName = "Help";
+
+        if (updateIntent) this.retrieveChecksum(this.intentName, "$LATEST");
+        else this.checksum = null;
+
+        this.conclusionStatement = null;
+
+        //Setup confirmation prompt
+        this.confirmationPrompt = null;
+
+
+        this.description = "Intent that is invoked when user needs help on how to use Tricia";
+
+        this.dialogCodeHook = null;
+
+        //Setup followUpPrompt
+        Prompt followUpPrompt = new Prompt().withMaxAttempts(2).withMessages(new Message()
+                .withContentType(ContentType.PlainText)
+                .withContent("So tell me, is there anything I can help you with today?"));
+        Statement rejectionStatement = new Statement().withMessages(new Message()
+                .withContentType(ContentType.PlainText)
+                .withContent("Okay, thanks for using Trade with Tricia. I hope I was able to help you with what you needed today."));
+        this.followUpPrompt = new FollowUpPrompt().withPrompt(followUpPrompt)
+                .withRejectionStatement(rejectionStatement);
+
+        this.fulfillmentActivity = new FulfillmentActivity().withType(FulfillmentActivityType.CodeHook)
+                .withCodeHook(new CodeHook().withMessageVersion("1.0")
+                        .withUri("arn:aws:lambda:us-east-1:140857943657:function:HelpReturn"));
+
+        this.parentIntentSignature = null;
+
+        //Set sampleUtterances
+        Collection<String> sampleUtterances = new ArrayList<String>();
+        sampleUtterances.add("help");
+        sampleUtterances.add("I need help");
+        sampleUtterances.add("Help me");
+        this.sampleUtterances = sampleUtterances;
+
+        this.slots = null;
+
+        this.putIntent();
+    }
 
 
     private void retrieveChecksum(String intentName, String version) {
